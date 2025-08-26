@@ -56,7 +56,7 @@
 
 #include <WiFi.h>       // standard library
 #include <WebServer.h>  // standard library
-#include "SuperMon.h"   // .h file that stores your html page code
+#include "html-webpage.h"   // .h file that stores your html page code
 
 // here you post web pages to your homes intranet which will make page debugging easier
 // as you just need to refresh the browser as opposed to reconnection to the web server
@@ -169,7 +169,7 @@ void setup() {
   // same notion for the following .on calls
   // add as many as you need to process incoming strings from your web page
   // as you can imagine you will need to code some javascript in your web page to send such strings
-  // this process will be documented in the SuperMon.h web page code
+  // this process will be documented in the html-webpage.h web page code
   server.on("/UPDATE_SLIDER", UpdateSlider);
   server.on("/BUTTON_0", ProcessButton_0);
   server.on("/BUTTON_1", ProcessButton_1);
@@ -310,7 +310,7 @@ Serial.print("Button 1 "); Serial.println(LED0);
 
 
 // code to send the main web page
-// PAGE_MAIN is a large char defined in SuperMon.h
+// PAGE_MAIN is a large char defined in html-webpage.h
 void SendWebsite() {
 
   Serial.println("sending web page");
