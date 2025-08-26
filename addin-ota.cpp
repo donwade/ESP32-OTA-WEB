@@ -151,7 +151,8 @@ void brownout_init()
 
     REG_SET_BIT(RTC_CNTL_INT_ENA_REG, RTC_CNTL_BROWN_OUT_INT_ENA_M);
 }
-uint32_t saved_counter;
+
+static int32_t num_resets;
 
 extern void web_setup(void);
 extern void web_loop(void);
@@ -169,8 +170,7 @@ void ota_setup()
 
     // Initialize NVS
     brownout_init();
-
-    int32_t saved_counter = 0; // value will default to 0, if not set yet in NVS
+   
     esp_err_t err = nvs_flash_init();
 
     if (err == ESP_ERR_NVS_NO_FREE_PAGES || err == ESP_ERR_NVS_NEW_VERSION_FOUND) 
@@ -199,17 +199,23 @@ void ota_setup()
 
         // Read
         printf("Reading restart counter from NVS ... ");
-        err = nvs_get_i32(my_handle, "saved_counter", &saved_counter);
+        err = nvs_get_i32(my_handle, "num_resets", &num_resets);
 		
         switch (err) 
 		{
             case ESP_OK:
                 printf("Done\n");
-                printf("Restart counter = %d\n", saved_counter);
+                printf("Restart counter = %d\n", num_resets);
+				err = nvs_set_i32(my_handle, "num_resets", num_resets+1);
+				Serial.printf("%s:%d err=%d\n", __FUNCTION__,__LINE__);
                 break;
 				
             case ESP_ERR_NVS_NOT_FOUND:
                 printf("The value is not initialized yet!\n");
+				
+				// initialize it.
+				err = nvs_set_i32(my_handle, "num_resets", num_resets);
+				Serial.printf("%s:%d err=%d\n", __FUNCTION__,__LINE__);
                 break;
 
             default :
@@ -299,7 +305,6 @@ void ota_loop()
 		digitalWrite(LED_BUILTIN,val);
 		val = !val;
 		ticker = millis();
-		printf("Restart counter = %d\n", saved_counter);
 	}
 	
 	ArduinoOTA.handle();
