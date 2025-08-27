@@ -242,7 +242,7 @@ void ota_setup()
 	ArduinoOTA.setPort(3232);
 
 	// Hostname defaults to esp3232-[MAC]
-	ArduinoOTA.setHostname("rover32");
+	ArduinoOTA.setHostname("m5-core2");
 
 	// No authentication by default
 	// ArduinoOTA.setPassword("admin");

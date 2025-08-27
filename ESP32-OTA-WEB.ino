@@ -58,24 +58,47 @@
 #include <WebServer.h>  // standard library
 #include "html-webpage.h"   // .h file that stores your html page code
 
+#include <M5Unified.h>
+#include <TinyGPS++.h>
+#include <SD.h>
+
+#include "m5Core2-only.h"
+#include "viewController.h"
+#include "watchdogs.h"
+#include "viewController.h"
+#include "rtc_wdt.h"
+#include "esp_debug_helpers.h"
+
 // here you post web pages to your homes intranet which will make page debugging easier
 // as you just need to refresh the browser as opposed to reconnection to the web server
+
 #define USE_LOCAL_ROUTER
 
 // replace this with your homes intranet connect parameters
 #define LOCAL_SSID "your_home_ssid"
 #define LOCAL_PASS "your_home_passwrord"
 
-// once  you are read to go live these settings are what you client will connect to
+#ifndef USE_LOCAL_ROUTER
+// make your own hotspot, provide SSID and PASSWORD
 #define AP_SSID "TestWebSite"
 #define AP_PASS "023456789"
+#endif
 
+#if 0
 // start your defines for pins for sensors, outputs etc.
 #define PIN_ARBITRARY_OUTPUT 26 // connected to nothing but an example of a digital write from the web page
 #define PIN_FAN_PMW 		 27 // pin 27 and is a PWM signal to control a fan speed
 #define PIN_LED 			  2 //On board LED
 #define PIN_A2D_0 			 34 // some analog input sensor
 #define PIN_A2D_1 			 35 // some analog input sensor
+#else
+// start your defines for pins for sensors, outputs etc.
+#define PIN_ARBITRARY_OUTPUT -1 // connected to nothing but an example of a digital write from the web page
+#define PIN_FAN_PMW 		 -1 // pin 27 and is a PWM signal to control a fan speed
+#define PIN_LED 			 -1 //On board LED
+#define PIN_A2D_0 			 -1 // some analog input sensor
+#define PIN_A2D_1 			 -1 // some analog input sensor
+#endif
 
 // variables to store measure data and sensor states
 int		A2D_A0_RAW = 0, 	A2D_A1_RAW = 0;
@@ -110,8 +133,18 @@ WebServer server(80);
 extern void ota_setup(void);
 extern void ota_loop(void);
 
+static const gpio_num_t SDCARD_CSPIN = GPIO_NUM_4;
+
 void setup() {
 
+  setup_M5();
+  Serial.printf("BUILT ON %s %s *** ESP-IDF VER = %s ***\n", __DATE__, __TIME__, esp_get_idf_version());                                                                          
+
+  bool ok = SD.begin(SDCARD_CSPIN, SPI, 8000000); 
+  Serial.printf("SD=%d\n", ok); 
+  lsetTextColor(_WHITE, _BLACK);
+  lsetCursor(0, 0);
+  
   ota_setup();
   
   pinMode(PIN_FAN_PMW, OUTPUT);
@@ -192,6 +225,14 @@ void setup() {
 
   // finally begin the server
   server.begin();
+
+  spawnTaskAndDogV2( runLightBarTask, //(void * not_used)TaskFunction_t pvTaskCode,
+                     "LightBarTask",  //const char * const pcName,
+                     1024 * 8,        //const uint32_t usStackDepth,
+                     NULL,            //void * const pvParameters,
+                     4                //UBaseType_t uxPriority)
+                     );
+  setToggleColors(_RED, _BLUE, 3);
 
 }
 
