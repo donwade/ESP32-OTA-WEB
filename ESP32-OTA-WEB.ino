@@ -92,7 +92,7 @@ int FanRPM = 0;
 char XML[2048];
 
 // just some buffer holder for char operations
-char buf[32];
+char xml_tbuf[320];
 
 // variable for the IP reported when you connect to your homes intranet (during debug mode)
 IPAddress Actual_IP;
@@ -228,6 +228,7 @@ void loop() {
 
 
 // function managed by an .on method to handle slider actions on the web page
+
 // this example will get the passed string called VALUE and conver to a pwm value
 // and control the fan speed
 void UpdateSlider() {
@@ -265,11 +266,11 @@ void UpdateSlider() {
   
   FanRPM = map(FanSpeed, 0, 255, 0, 2400);
   
-  strcpy(buf, "");
-  sprintf(buf, "%d", FanRPM);
+  strcpy(xml_tbuf, "");
+  sprintf(xml_tbuf, "%d", FanRPM);
   
   // now send rpm  back to webpage for display
-  server.send(200, "text/plain", buf); //Send web page
+  server.send(200, "text/plain", xml_tbuf); //Send web page
 
 }
 
@@ -359,20 +360,20 @@ void SendXML() {
   strcpy(XML, "<?xml version = '1.0'?>\n<Data>\n");
 
   // send a2d 0 value
-  sprintf(buf, "<B0>%d</B0>\n", A2D_A0_RAW);
-  strcat(XML, buf);
+  sprintf(xml_tbuf, "<B0>%d</B0>\n", A2D_A0_RAW);
+  strcat(XML, xml_tbuf);
   
   // send voltage ad2-0
-  sprintf(buf, "<V0>%d.%d</V0>\n", (int) (A2D_A0_Voltage), abs((int) (A2D_A0_Voltage * 10)  - ((int) (A2D_A0_Voltage) * 10)));
-  strcat(XML, buf);
+  sprintf(xml_tbuf, "<V0>%d.%d</V0>\n", (int) (A2D_A0_Voltage), abs((int) (A2D_A0_Voltage * 10)  - ((int) (A2D_A0_Voltage) * 10)));
+  strcat(XML, xml_tbuf);
 
   // send a2d 1 value
-  sprintf(buf, "<B1>%d</B1>\n", A2D_A1_RAW);
-  strcat(XML, buf);
+  sprintf(xml_tbuf, "<B1>%d</B1>\n", A2D_A1_RAW);
+  strcat(XML, xml_tbuf);
   
   // send voltage a2d-1
-  sprintf(buf, "<V1>%d.%d</V1>\n", (int) (A2D_A1_Voltage), abs((int) (A2D_A1_Voltage * 10)  - ((int) (A2D_A1_Voltage) * 10)));
-  strcat(XML, buf);
+  sprintf(xml_tbuf, "<V1>%d.%d</V1>\n", (int) (A2D_A1_Voltage), abs((int) (A2D_A1_Voltage * 10)  - ((int) (A2D_A1_Voltage) * 10)));
+  strcat(XML, xml_tbuf);
 
   // show led0 status
   if (LED0) {
@@ -390,13 +391,16 @@ void SendXML() {
   }
 
   strcat(XML, "</Data>\n");
+
   // wanna see what the XML code looks like?
   // actually print it to the serial monitor and use some text editor to get the size
   // then pad and adjust char XML[2048]; above
+
   Serial.println(XML);
 
   // you may have to play with this value, big pages need more porcessing time, and hence
   // a longer timeout that 200 ms
+
   server.send(200, "text/xml", XML);
 
 
