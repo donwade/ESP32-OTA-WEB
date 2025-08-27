@@ -71,18 +71,21 @@
 #define AP_PASS "023456789"
 
 // start your defines for pins for sensors, outputs etc.
-#define PIN_OUTPUT 26 // connected to nothing but an example of a digital write from the web page
-#define PIN_FAN 27    // pin 27 and is a PWM signal to control a fan speed
-#define PIN_LED 2     //On board LED
-#define PIN_A0 34     // some analog input sensor
-#define PIN_A1 35     // some analog input sensor
+#define PIN_ARBITRARY_OUTPUT 26 // connected to nothing but an example of a digital write from the web page
+#define PIN_FAN_PMW 		 27 // pin 27 and is a PWM signal to control a fan speed
+#define PIN_LED 			  2 //On board LED
+#define PIN_A2D_0 			 34 // some analog input sensor
+#define PIN_A2D_1 			 35 // some analog input sensor
 
 // variables to store measure data and sensor states
-int A2D_A0_RAW = 0, A2D_A1_RAW = 0;
-float A2D_A0_Voltage = 0, A2D_A1_Voltage = 0;
-int FanSpeed = 0;
+int		A2D_A0_RAW = 0, 	A2D_A1_RAW = 0;
+float 	A2D_A0_Voltage = 0, A2D_A1_Voltage = 0;
+
 bool LED0 = false, SomeOutput = false;
-uint32_t SensorUpdate = 0;
+
+uint32_t lastSensorTime = 0;
+
+int FanSpeed = 0;
 int FanRPM = 0;
 
 // the XML array size needs to be bigger that your maximum expected size. 2048 is way too big for this example
@@ -111,7 +114,7 @@ void setup() {
 
   ota_setup();
   
-  pinMode(PIN_FAN, OUTPUT);
+  pinMode(PIN_FAN_PMW, OUTPUT);
   pinMode(PIN_LED, OUTPUT);
 
   // turn off led
@@ -121,7 +124,7 @@ void setup() {
   // configure LED PWM functionalitites
   /* old ESP compiler
   ledcSetup(0, 10000, 8);
-  ledcAttachPin(PIN_FAN, 0);
+  ledcAttachPin(PIN_FAN_PMW, 0);
   ledcWrite(0, FanSpeed);
   */
 
@@ -176,15 +179,16 @@ void setup() {
   
   server.on("/xml", SendXML);
 
-  // upon ESP getting /UPDATE_SLIDER string, ESP will execute the UpdateSlider function
+  // upon ESP getting /UPDATE_SLIDER string,
+  // ESP will execute the UpdateSlider function
   // same notion for the following .on calls
   // add as many as you need to process incoming strings from your web page
   // as you can imagine you will need to code some javascript in your web page to send such strings
   // this process will be documented in the html-webpage.h web page code
   
   server.on("/UPDATE_SLIDER", UpdateSlider);
-  server.on("/BUTTON_0", ProcessButton_0);
-  server.on("/BUTTON_1", ProcessButton_1);
+  server.on("/BUTTON_0", UserPressLEDbutton);
+  server.on("/BUTTON_1", UserPressSwitchButton);
 
   // finally begin the server
   server.begin();
@@ -203,12 +207,12 @@ void loop() {
   // and process accordingly
   // analog input can be from temperature sensors, light sensors, digital pin sensors, etc.
   
-  if ((millis() - SensorUpdate) >= 50) 
+  if ((millis() - lastSensorTime) >= 50) 
   {
     //Serial.println("Reading Sensors");
-    SensorUpdate = millis();
-    A2D_A0_RAW = analogRead(PIN_A0);
-    A2D_A1_RAW = analogRead(PIN_A1);
+    lastSensorTime = millis();
+    A2D_A0_RAW = analogRead(PIN_A2D_0);
+    A2D_A1_RAW = analogRead(PIN_A2D_1);
 
     // standard converion to go from 12 bit resolution reads to volts on an ESP
     A2D_A0_Voltage = A2D_A0_RAW * 3.3 / 4096;
@@ -233,13 +237,15 @@ void UpdateSlider() {
 
   // conver the string sent from the web page to an int
   FanSpeed = t_state.toInt();
+  
   Serial.print("UpdateSlider"); Serial.println(FanSpeed);
   // now set the PWM duty cycle
+  
   // old ESP compiler
   // ledcWrite(0, FanSpeed);
 
   // latest ESP compiler
-  analogWrite(PIN_FAN, FanSpeed);
+  analogWrite(PIN_FAN_PMW, FanSpeed); // config for PMW out mode
 
 
   // YOU MUST SEND SOMETHING BACK TO THE WEB PAGE--BASICALLY TO KEEP IT LIVE
@@ -250,28 +256,34 @@ void UpdateSlider() {
 
   // option 2: send something back immediately, maybe a pass/fail indication, maybe a measured value
   // here is how you send data back immediately and NOT through the general XML page update code
+
   // my simple example guesses at fan speed--ideally measure it and send back real data
   // i avoid strings at all caost, hence all the code to start with "" in the buffer and build a
   // simple piece of data
+
+  // slider goes from 0 - 255, rpm goes from 0 - 2400
+  
   FanRPM = map(FanSpeed, 0, 255, 0, 2400);
+  
   strcpy(buf, "");
   sprintf(buf, "%d", FanRPM);
   
-  // now send it back
+  // now send rpm  back to webpage for display
   server.send(200, "text/plain", buf); //Send web page
 
 }
 
-// now process button_0 press from the web site. Typical applications are the used on the web client can
+// now process LED on/off press from the web site. Typical applications are the used on the web client can
 // turn on / off a light, a fan, disable something etc
-void ProcessButton_0() {
 
-  //
-
+void UserPressLEDbutton() 
+{
 
   LED0 = !LED0;
+  
   digitalWrite(PIN_LED, LED0);
   Serial.print("Button 0 "); Serial.println(LED0);
+  
   // regardless if you want to send stuff back to client or not
   // you must have the send line--as it keeps the page running
   // if you don't want feedback from the MCU--or let the XML manage
@@ -298,18 +310,21 @@ void ProcessButton_0() {
 }
 
 // same notion for processing button_1
-void ProcessButton_1() {
+void UserPressSwitchButton() {
 
-  // just a simple way to toggle a LED on/off. Much better ways to do this
+  // just a simple way to toggle a THINGY on/off. Much better ways to do this
+  
   Serial.println("Button 1 press");
   SomeOutput = !SomeOutput;
 
-  digitalWrite(PIN_OUTPUT, SomeOutput);
-Serial.print("Button 1 "); Serial.println(LED0);
+  digitalWrite(PIN_ARBITRARY_OUTPUT, SomeOutput);
+  Serial.print("Button 1 "); Serial.println(LED0);
+  
   // regardless if you want to send stuff back to client or not
   // you must have the send line--as it keeps the page running
   // if you don't want feedback from the MCU--or send all data via XML use this method
   // sending feeback
+
   server.send(200, "text/plain", ""); //Send web page
 
   // if you want to send feed back immediataly
@@ -343,17 +358,19 @@ void SendXML() {
 
   strcpy(XML, "<?xml version = '1.0'?>\n<Data>\n");
 
-  // send bitsA0
+  // send a2d 0 value
   sprintf(buf, "<B0>%d</B0>\n", A2D_A0_RAW);
   strcat(XML, buf);
-  // send Volts0
+  
+  // send voltage ad2-0
   sprintf(buf, "<V0>%d.%d</V0>\n", (int) (A2D_A0_Voltage), abs((int) (A2D_A0_Voltage * 10)  - ((int) (A2D_A0_Voltage) * 10)));
   strcat(XML, buf);
 
-  // send bits1
+  // send a2d 1 value
   sprintf(buf, "<B1>%d</B1>\n", A2D_A1_RAW);
   strcat(XML, buf);
-  // send Volts1
+  
+  // send voltage a2d-1
   sprintf(buf, "<V1>%d.%d</V1>\n", (int) (A2D_A1_Voltage), abs((int) (A2D_A1_Voltage * 10)  - ((int) (A2D_A1_Voltage) * 10)));
   strcat(XML, buf);
 
