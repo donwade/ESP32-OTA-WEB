@@ -290,12 +290,15 @@ void ota_setup()
 	Serial.print("IP address: ");
 	Serial.println(WiFi.localIP());
 
-	pinMode(LED_BUILTIN, OUTPUT);
+	//pinMode(LED_BUILTIN, OUTPUT);  // blinky
 
 }
 
 void ota_loop() 
 {
+
+#if 0
+	// blinky
 	static uint32_t ticker;
 	static bool val;
 
@@ -306,6 +309,7 @@ void ota_loop()
 		val = !val;
 		ticker = millis();
 	}
-	
+#endif
+
 	ArduinoOTA.handle();
 }

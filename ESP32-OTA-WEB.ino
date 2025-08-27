@@ -60,7 +60,7 @@
 
 // here you post web pages to your homes intranet which will make page debugging easier
 // as you just need to refresh the browser as opposed to reconnection to the web server
-#define USE_INTRANET
+#define USE_LOCAL_ROUTER
 
 // replace this with your homes intranet connect parameters
 #define LOCAL_SSID "your_home_ssid"
@@ -78,8 +78,8 @@
 #define PIN_A1 35     // some analog input sensor
 
 // variables to store measure data and sensor states
-int BitsA0 = 0, BitsA1 = 0;
-float VoltsA0 = 0, VoltsA1 = 0;
+int A2D_A0_RAW = 0, A2D_A1_RAW = 0;
+float A2D_A0_Voltage = 0, A2D_A1_Voltage = 0;
 int FanSpeed = 0;
 bool LED0 = false, SomeOutput = false;
 uint32_t SensorUpdate = 0;
@@ -103,11 +103,14 @@ IPAddress ip;
 // gotta create a server
 WebServer server(80);
 
+
+extern void ota_setup(void);
+extern void ota_loop(void);
+
 void setup() {
 
-  // standard stuff here
-  Serial.begin(9600);
-
+  ota_setup();
+  
   pinMode(PIN_FAN, OUTPUT);
   pinMode(PIN_LED, OUTPUT);
 
@@ -129,10 +132,14 @@ void setup() {
   // disableCore1WDT();
 
   // just an update to progress
-  Serial.println("starting server");
 
-  // if you have this #define USE_INTRANET,  you will connect to your home intranet, again makes debugging easier
-#ifdef USE_INTRANET
+
+#if 0  // DONE IN add-in.ota
+  // standard stuff here
+  Serial.begin(9600);
+
+  // if you have this #define USE_LOCAL_ROUTER,  you will connect to your home intranet, again makes debugging easier
+#ifdef USE_LOCAL_ROUTER
   WiFi.begin(LOCAL_SSID, LOCAL_PASS);
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
@@ -141,11 +148,13 @@ void setup() {
   Serial.print("IP address: "); Serial.println(WiFi.localIP());
   Actual_IP = WiFi.localIP();
 #endif
+#endif
 
-  // if you don't have #define USE_INTRANET, here's where you will creat and access point
+  // if you don't have #define USE_LOCAL_ROUTER, here's where you will creat and access point
   // an intranet with no internet connection. But Clients can connect to your intranet and see
   // the web page you are about to serve up
-#ifndef USE_INTRANET
+  
+#ifndef USE_LOCAL_ROUTER
   WiFi.softAP(AP_SSID, AP_PASS);
   delay(100);
   WiFi.softAPConfig(PageIP, gateway, subnet);
@@ -154,6 +163,7 @@ void setup() {
   Serial.print("IP address: "); Serial.println(Actual_IP);
 #endif
 
+  Serial.println("starting server");
   printWifiStatus();
 
 
@@ -163,6 +173,7 @@ void setup() {
 
   // upon esp getting /XML string, ESP will build and send the XML, this is how we refresh
   // just parts of the web page
+  
   server.on("/xml", SendXML);
 
   // upon ESP getting /UPDATE_SLIDER string, ESP will execute the UpdateSlider function
@@ -170,6 +181,7 @@ void setup() {
   // add as many as you need to process incoming strings from your web page
   // as you can imagine you will need to code some javascript in your web page to send such strings
   // this process will be documented in the html-webpage.h web page code
+  
   server.on("/UPDATE_SLIDER", UpdateSlider);
   server.on("/BUTTON_0", ProcessButton_0);
   server.on("/BUTTON_1", ProcessButton_1);
@@ -181,6 +193,8 @@ void setup() {
 
 void loop() {
 
+  ota_loop();
+  
   // you main loop that measures, processes, runs code, etc.
   // note that handling the "on" strings from the web page are NOT in the loop
   // that processing is in individual functions all managed by the wifi lib
@@ -188,15 +202,17 @@ void loop() {
   // in my example here every 50 ms, i measure some analog sensor data (my finger dragging over the pins
   // and process accordingly
   // analog input can be from temperature sensors, light sensors, digital pin sensors, etc.
-  if ((millis() - SensorUpdate) >= 50) {
+  
+  if ((millis() - SensorUpdate) >= 50) 
+  {
     //Serial.println("Reading Sensors");
     SensorUpdate = millis();
-    BitsA0 = analogRead(PIN_A0);
-    BitsA1 = analogRead(PIN_A1);
+    A2D_A0_RAW = analogRead(PIN_A0);
+    A2D_A1_RAW = analogRead(PIN_A1);
 
     // standard converion to go from 12 bit resolution reads to volts on an ESP
-    VoltsA0 = BitsA0 * 3.3 / 4096;
-    VoltsA1 = BitsA1 * 3.3 / 4096;
+    A2D_A0_Voltage = A2D_A0_RAW * 3.3 / 4096;
+    A2D_A1_Voltage = A2D_A1_RAW * 3.3 / 4096;
 
   }
 
@@ -328,17 +344,17 @@ void SendXML() {
   strcpy(XML, "<?xml version = '1.0'?>\n<Data>\n");
 
   // send bitsA0
-  sprintf(buf, "<B0>%d</B0>\n", BitsA0);
+  sprintf(buf, "<B0>%d</B0>\n", A2D_A0_RAW);
   strcat(XML, buf);
   // send Volts0
-  sprintf(buf, "<V0>%d.%d</V0>\n", (int) (VoltsA0), abs((int) (VoltsA0 * 10)  - ((int) (VoltsA0) * 10)));
+  sprintf(buf, "<V0>%d.%d</V0>\n", (int) (A2D_A0_Voltage), abs((int) (A2D_A0_Voltage * 10)  - ((int) (A2D_A0_Voltage) * 10)));
   strcat(XML, buf);
 
   // send bits1
-  sprintf(buf, "<B1>%d</B1>\n", BitsA1);
+  sprintf(buf, "<B1>%d</B1>\n", A2D_A1_RAW);
   strcat(XML, buf);
   // send Volts1
-  sprintf(buf, "<V1>%d.%d</V1>\n", (int) (VoltsA1), abs((int) (VoltsA1 * 10)  - ((int) (VoltsA1) * 10)));
+  sprintf(buf, "<V1>%d.%d</V1>\n", (int) (A2D_A1_Voltage), abs((int) (A2D_A1_Voltage * 10)  - ((int) (A2D_A1_Voltage) * 10)));
   strcat(XML, buf);
 
   // show led0 status
