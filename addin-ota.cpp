@@ -6,6 +6,9 @@
 #include <ESPmDNS.h>
 #include <NetworkUdp.h>
 #include <ArduinoOTA.h>
+
+#include "addin-ota.h"
+
 //#include "esp_brownout_detector.h" // Include the brownout detector header
 
 #ifndef MY_SSID
@@ -242,8 +245,9 @@ void ota_setup()
 	ArduinoOTA.setPort(3232);
 
 	// Hostname defaults to esp3232-[MAC]
-	ArduinoOTA.setHostname("m5-core2");
-
+	ArduinoOTA.setHostname(LOCAL_HOSTNAME);
+	Serial.printf("remote hostname = %s.local\n", LOCAL_HOSTNAME);
+	
 	// No authentication by default
 	// ArduinoOTA.setPassword("admin");
 

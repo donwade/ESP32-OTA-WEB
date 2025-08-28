@@ -2,6 +2,7 @@
 #include "viewController.h"
 #include "watchdogs.h"
 #include "TimeLib.h"
+#include "addin-ota.h"
 
 #define LINE Serial.printf("%s:%d\n", __FUNCTION__, __LINE__)
 
@@ -101,18 +102,21 @@ void * savingMode(BUTTON_EVENT some_key)
 						percent,
 						cur,
 						isCharging ? "CHG":"DIS");
-	
+
+
+	cprintf(_GREEN, 2, "host= %s", LOCAL_HOSTNAME);
+		
 	ip = WiFi.localIP();
 	uint32_t x = (uint32_t) ip;
 	
-	cprintf(_GREEN, 2, "ip = %d:%d:%d:%d", 
+	cprintf(_GREEN, 3, "ip = %d:%d:%d:%d", 
 		 x     & 0xFF,
 		(x>>8 )&0xFF, 
 		(x>>16)&0xFF, 
 		(x>>24)&0xFF);
 	
 	// print the received signal strength:
-	cprintf(_GREEN, 3, "%d dBm", WiFi.RSSI());
+	cprintf(_GREEN, 4, "%d dBm", WiFi.RSSI());
 	
 	// all display updates done ... just keys left
 	if (some_key == DISPLAY_REFRESH) return (void*) savingMode;

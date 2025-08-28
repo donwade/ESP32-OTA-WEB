@@ -92,20 +92,20 @@ void runDisplayTask(void *not_used);
 #define PIN_ARBITRARY_OUTPUT 26 // connected to nothing but an example of a digital write from the web page
 #define PIN_FAN_PMW 		 27 // pin 27 and is a PWM signal to control a fan speed
 #define PIN_LED 			  2 //On board LED
-#define PIN_A2D_0 			 34 // some analog input sensor
-#define PIN_A2D_1 			 35 // some analog input sensor
+#define P32_WHT_RDR			 34 // some analog input sensor
+#define P33_YLW_NC 			 35 // some analog input sensor
 #else
 // start your defines for pins for sensors, outputs etc.
 #define PIN_ARBITRARY_OUTPUT -1 // connected to nothing but an example of a digital write from the web page
 #define PIN_FAN_PMW 		 -1 // pin 27 and is a PWM signal to control a fan speed
 #define PIN_LED 			 -1 //On board LED
-#define PIN_A2D_0 			 -1 // some analog input sensor
-#define PIN_A2D_1 			 -1 // some analog input sensor
+#define P32_WHT_RDR			 32 // 
+#define P33_YLW_NC 			 33 // some analog input sensor
 #endif
 
 // variables to store measure data and sensor states
-int		A2D_A0_RAW = 0, 	A2D_A1_RAW = 0;
-float 	A2D_A0_Voltage = 0, A2D_A1_Voltage = 0;
+int		A2D_P32 = 0, 	A2D_P33 = 0;
+float 	A2D_P32_mV = 0, A2D_P33_mV = 0;
 
 bool LED0 = false, SomeOutput = false;
 
@@ -150,8 +150,11 @@ void setup() {
   
   ota_setup();
   
-  pinMode(PIN_FAN_PMW, OUTPUT);
+  //pinMode(PIN_FAN_PMW, OUTPUT);
   pinMode(PIN_LED, OUTPUT);
+
+  pinMode(P32_WHT_RDR, INPUT); //was analogRead(P32_WHT_RDR);
+  pinMode(P33_YLW_NC, INPUT); //wad analogRead(P33_YLW_NC);
 
   // turn off led
   LED0 = false;
@@ -243,12 +246,14 @@ void setup() {
                      4                //UBaseType_t uxPriority)
                      );
 
-  setToggleColors(_RED, _BLUE, 2);
 
 }
 
 void loop() {
 
+  static int8_t p32 = -1;
+  static int8_t p33 = -1;
+  
   ota_loop();
   
   // you main loop that measures, processes, runs code, etc.
@@ -263,12 +268,31 @@ void loop() {
   {
     //Serial.println("Reading Sensors");
     lastSensorTime = millis();
-    A2D_A0_RAW =  22; //analogRead(PIN_A2D_0);
-    A2D_A1_RAW =  55; //analogRead(PIN_A2D_1);
+    A2D_P32 =  digitalRead(P32_WHT_RDR); //analogRead(P32_WHT_RDR);
+    A2D_P33 =  digitalRead(P33_YLW_NC); //analogRead(P33_YLW_NC);
+
+	if (p32 != A2D_P32)
+	{
+		p32 = A2D_P32;
+		Serial.printf("ssssssssssssss p32 = %d\n", p32);
+		p32 ? setToggleColors(_RED, _BLUE, 2) :
+			  setToggleColors(_BLACK, _BLACK, 2);
+	}
+
+	if (p33 != A2D_P33)
+	{
+		p33 = A2D_P33;
+		Serial.printf("ssssssssssssss p33 = %\n", p33);
+	}
+
 
     // standard converion to go from 12 bit resolution reads to volts on an ESP
-    A2D_A0_Voltage = A2D_A0_RAW * 3.3 / 4096;
-    A2D_A1_Voltage = A2D_A1_RAW * 3.3 / 4096;
+    A2D_P32_mV = A2D_P32 * 3300;
+    A2D_P33_mV = A2D_P33 * 3300;
+
+    // standard converion to go from 12 bit resolution reads to volts on an ESP
+    //A2D_P32_mV = A2D_P32 * 3300 / 4096;
+    //A2D_P33_mV = A2D_P33 * 3300 / 4096;
 
   }
 
@@ -412,19 +436,19 @@ void SendXML() {
   strcpy(XML, "<?xml version = '1.0'?>\n<Data>\n");
 
   // send a2d 0 value
-  sprintf(xml_tbuf, "<B0>%d</B0>\n", A2D_A0_RAW);
+  sprintf(xml_tbuf, "<B0>%d</B0>\n", A2D_P32);
   strcat(XML, xml_tbuf);
   
   // send voltage ad2-0
-  sprintf(xml_tbuf, "<V0>%d.%d</V0>\n", (int) (A2D_A0_Voltage), abs((int) (A2D_A0_Voltage * 10)  - ((int) (A2D_A0_Voltage) * 10)));
+  sprintf(xml_tbuf, "<V0>%d.%d</V0>\n", (int) (A2D_P32_mV), abs((int) (A2D_P32_mV * 10)  - ((int) (A2D_P32_mV) * 10)));
   strcat(XML, xml_tbuf);
 
   // send a2d 1 value
-  sprintf(xml_tbuf, "<B1>%d</B1>\n", A2D_A1_RAW);
+  sprintf(xml_tbuf, "<B1>%d</B1>\n", A2D_P33);
   strcat(XML, xml_tbuf);
   
   // send voltage a2d-1
-  sprintf(xml_tbuf, "<V1>%d.%d</V1>\n", (int) (A2D_A1_Voltage), abs((int) (A2D_A1_Voltage * 10)  - ((int) (A2D_A1_Voltage) * 10)));
+  sprintf(xml_tbuf, "<V1>%d.%d</V1>\n", (int) (A2D_P33_mV), abs((int) (A2D_P33_mV * 10)  - ((int) (A2D_P33_mV) * 10)));
   strcat(XML, xml_tbuf);
 
   // show led0 status

@@ -243,10 +243,10 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
       <tr>
         <th colspan="1"><div class="heading">Pin</div></th>
         <th colspan="1"><div class="heading">Bits</div></th>
-        <th colspan="1"><div class="heading">Volts</div></th>
+        <th colspan="1"><div class="heading">  mV</div></th>
       </tr>
       <tr>
-        <td><div class="bodytext">Analog pin 34</div></td>
+        <td><div class="bodytext">Radar pin 32</div></td>
         <td><div class="tabledata" id = "b0"></div></td>
         <td><div class="tabledata" id = "v0"></div></td>
       </tr>
