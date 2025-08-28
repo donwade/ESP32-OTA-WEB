@@ -69,6 +69,9 @@
 #include "rtc_wdt.h"
 #include "esp_debug_helpers.h"
 
+void runDisplayTask(void *not_used);
+
+
 // here you post web pages to your homes intranet which will make page debugging easier
 // as you just need to refresh the browser as opposed to reconnection to the web server
 
@@ -232,7 +235,15 @@ void setup() {
                      NULL,            //void * const pvParameters,
                      4                //UBaseType_t uxPriority)
                      );
-  setToggleColors(_RED, _BLUE, 3);
+
+  spawnTaskAndDogV2( runDisplayTask, //(void * not_used)TaskFunction_t pvTaskCode,
+                     "DisplayTask",  //const char * const pcName,
+                     1024 * 8,        //const uint32_t usStackDepth,
+                     NULL,            //void * const pvParameters,
+                     4                //UBaseType_t uxPriority)
+                     );
+
+  setToggleColors(_RED, _BLUE, 2);
 
 }
 
@@ -252,8 +263,8 @@ void loop() {
   {
     //Serial.println("Reading Sensors");
     lastSensorTime = millis();
-    A2D_A0_RAW = analogRead(PIN_A2D_0);
-    A2D_A1_RAW = analogRead(PIN_A2D_1);
+    A2D_A0_RAW =  22; //analogRead(PIN_A2D_0);
+    A2D_A1_RAW =  55; //analogRead(PIN_A2D_1);
 
     // standard converion to go from 12 bit resolution reads to volts on an ESP
     A2D_A0_Voltage = A2D_A0_RAW * 3.3 / 4096;
@@ -264,7 +275,7 @@ void loop() {
   // no matter what you must call this handleClient repeatidly--otherwise the web page
   // will not get instructions to do something
   server.handleClient();
-
+  	
 }
 
 
