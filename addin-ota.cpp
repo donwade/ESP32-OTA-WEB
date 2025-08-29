@@ -184,7 +184,7 @@ void brownout_init()
 
 		if (err == ESP_ERR_NVS_NOT_FOUND)
 		{
-			printf("The brownout value is not initialized yet!\n");
+			printf("\nVirgin :Set Brownout to 1 !\n");
 			nBrownouts = 1;
 			err = nvs_set_i32(my_handle, "brownouts", nBrownouts);
 			err = nvs_commit(my_handle);

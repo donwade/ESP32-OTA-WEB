@@ -92,15 +92,20 @@ void * savingMode(BUTTON_EVENT some_key)
 {
 	IPAddress ip;
 
+	const float fMAX_BAT_mV = 4200;
+	const float fMIN_BAT_mV = 3100;
+
     bool isCharging = M5.Power.isCharging();
-    int percent = M5.Power.getBatteryVoltage() * 100/ 3700; // 3.7 v bat max
-    int vol = M5.Power.getBatteryVoltage();
-    int cur = M5.Power.getBatteryCurrent();
+    
+    float volt_mV = M5.Power.getBatteryVoltage();
+    int percent = (fMAX_BAT_mV - volt_mV) * 100. / fMAX_BAT_mV;
 	
-	cprintf(_YELLOW, 1, "%3.1fv %03d%% %4dmA %s", 
-						(float)vol/1000.,
+    int current_mA = M5.Power.getBatteryCurrent();
+	
+	cprintf(_YELLOW, 1, "%3.1fv %3d%% %4dmA %s", 
+						volt_mV/1000.,
 						percent,
-						cur,
+						current_mA,
 						isCharging ? "CHG":"DIS");
 
 
