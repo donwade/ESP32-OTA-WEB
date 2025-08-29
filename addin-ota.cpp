@@ -39,6 +39,8 @@ const char *password = MY_SSID_PASSWORD;
 
 #define CONFIG_BROWNOUT_DET_LVL_SEL_5 1
 
+int32_t nResets;
+int32_t nBrownouts;
 
 //--------------------------------------------------------------
 //https://stackoverflow.com/questions/73200166/exception-handling-for-brownout-detector-was-trigerred
@@ -100,25 +102,38 @@ void print_reset_reason(RESET_REASON reason)
 
 
 //interrupt_handler_t void low_voltage_save(void *notused) {
- void low_voltage_save(void *notused) {
-    int32_t saved_counter = 0;
+
+ void low_voltage_save(void *notused) 
+{
+
     nvs_handle my_handle;
     esp_err_t err = nvs_open("storage", NVS_READWRITE, &my_handle);
+	
     if (err != ESP_OK) {
         ets_printf("Error (%s) opening NVS handle!\n", esp_err_to_name(err));
-    } else {
-        while(saved_counter < 100) {
-            saved_counter++;
-            err = nvs_set_i32(my_handle, "saved_counter", saved_counter);
-            err = nvs_commit(my_handle);
+    } 
+	else
+	{
+        err = nvs_get_i32(my_handle, "brownouts", &nBrownouts);
 
-        }
-        // Close
+		if (err == ESP_ERR_NVS_NOT_FOUND)
+		{
+			printf("The brownout value is not initialized yet!\n");
+			nBrownouts = 1;
+		}
+		
+        err = nvs_set_i32(my_handle, "brownouts", nBrownouts);
+        err = nvs_commit(my_handle);
+
         nvs_close(my_handle);
+		
         REG_WRITE(RTC_CNTL_INT_CLR_REG, RTC_CNTL_BROWN_OUT_INT_CLR);
+		
         esp_cpu_stall(!xPortGetCoreID());
+
         ets_printf("\r\nBrownout detector was triggered\r\n\r\n");
         //esp_restart_noos();
+        
         while(1) {
             vTaskDelay(1 / portTICK_PERIOD_MS);
         }
@@ -137,6 +152,7 @@ void print_reset_reason(RESET_REASON reason)
 
 void brownout_init()
 {
+
     REG_WRITE(RTC_CNTL_BROWN_OUT_REG,
             RTC_CNTL_BROWN_OUT_ENA /* Enable BOD */
             | RTC_CNTL_BROWN_OUT_PD_RF_ENA /* Automatically power down RF */
@@ -152,10 +168,33 @@ void brownout_init()
 
     printf("Initialized BOD\n");
 
-    REG_SET_BIT(RTC_CNTL_INT_ENA_REG, RTC_CNTL_BROWN_OUT_INT_ENA_M);
+    REG_SET_BIT( RTC_CNTL_INT_ENA_REG, 
+				 RTC_CNTL_BROWN_OUT_INT_ENA_M);
+
+	nvs_handle my_handle;
+	
+	esp_err_t err = nvs_open("storage", NVS_READWRITE, &my_handle);
+
+	if (err != ESP_OK) {
+		ets_printf("Error (%s) opening NVS handle!\n", esp_err_to_name(err));
+	} 
+	else
+	{
+		err = nvs_get_i32(my_handle, "brownouts", &nBrownouts);
+
+		if (err == ESP_ERR_NVS_NOT_FOUND)
+		{
+			printf("The brownout value is not initialized yet!\n");
+			nBrownouts = 1;
+			err = nvs_set_i32(my_handle, "brownouts", nBrownouts);
+			err = nvs_commit(my_handle);
+		}
+		
+		Serial.printf("%s:%d brownout value is %d\n", __FUNCTION__, __LINE__, nBrownouts);
+		nvs_close(my_handle);
+	}
 }
 
-static int32_t num_resets;
 
 extern void web_setup(void);
 extern void web_loop(void);
@@ -202,23 +241,25 @@ void ota_setup()
 
         // Read
         printf("Reading restart counter from NVS ... ");
-        err = nvs_get_i32(my_handle, "num_resets", &num_resets);
+        err = nvs_get_i32(my_handle, "nResets", &nResets);
 		
         switch (err) 
 		{
             case ESP_OK:
                 printf("Done\n");
-                printf("Restart counter = %d\n", num_resets);
-				err = nvs_set_i32(my_handle, "num_resets", num_resets+1);
+                printf("Restart counter = %d\n", nResets);
+				err = nvs_set_i32(my_handle, "nResets", nResets+1);
 				Serial.printf("%s:%d err=%d\n", __FUNCTION__,__LINE__);
                 break;
 				
             case ESP_ERR_NVS_NOT_FOUND:
-                printf("The value is not initialized yet!\n");
+                printf("The Restart value is not initialized yet!\n");
 				
 				// initialize it.
-				err = nvs_set_i32(my_handle, "num_resets", num_resets);
-				Serial.printf("%s:%d err=%d\n", __FUNCTION__,__LINE__);
+				err = nvs_set_i32(my_handle, "nResets", nResets);
+				Serial.printf("%s:%d err=%d\n", __FUNCTION__,__LINE__, err);
+				err = nvs_commit(my_handle);
+				
                 break;
 
             default :

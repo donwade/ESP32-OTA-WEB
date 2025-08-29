@@ -70,6 +70,7 @@
 #include "esp_debug_helpers.h"
 
 void runDisplayTask(void *not_used);
+void runPingTask(void *not_used);
 
 
 // here you post web pages to your homes intranet which will make page debugging easier
@@ -245,6 +246,14 @@ void setup() {
                      NULL,            //void * const pvParameters,
                      4                //UBaseType_t uxPriority)
                      );
+
+
+spawnTaskAndDogV2( runPingTask, 	//(void * not_used)TaskFunction_t pvTaskCode,
+				   "PingTask",  	//const char * const pcName,
+				   1024 * 8,		//const uint32_t usStackDepth,
+				   NULL,			//void * const pvParameters,
+				   4				//UBaseType_t uxPriority)
+				   );
 
 
 }

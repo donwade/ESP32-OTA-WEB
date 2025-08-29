@@ -5,6 +5,7 @@
 #include "watchdogs.h"
 #include "RTC.h"
 
+
 #define LEDS_PIN 25
 #define LEDS_NUM 10
 
@@ -122,6 +123,35 @@ void setToggleColors(uint32_t RGB_LEFT, uint32_t RGB_RIGHT, uint16_t brite)
 	bStopLedBarToggle = false;
 }
 
+
+#define ENABLE_DEBUG_PING 0   // not chatty on send
+#undef  LOG_LEVEL_INFO		  // mute ping results  
+#define LOG_LEVEL_WARN 
+
+#include <ESPping.h>
+
+void runPingTask(void *not_used)
+{
+	Serial.printf("starting %s\n", __FUNCTION__);
+	const IPAddress targetIP(10, 0, 0, 1);  
+
+	kickDog();
+	bool success = Ping.ping(targetIP, 2); // Or Ping.ping(targetHost, 5);
+
+	if (success) 
+	{
+		//Serial.print("Average response time: ");
+		//Serial.print(Ping.averageTime());
+		//Serial.println(" ms");
+		cprintf(_CYAN, 5, "Ping %5.3f mS ",  Ping.averageTime()); 
+	}
+	else
+	{
+		cprintf(_CYAN, 5, "Ping fail");
+		Serial.println("Ping failed.");
+	}		
+	delay(1000);
+}
 
 void runLightBarTask(void *not_used)
 {
