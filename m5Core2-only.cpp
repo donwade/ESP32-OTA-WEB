@@ -65,7 +65,7 @@ bool getBatteryStats (batt_stats *reply)
 	bool isCharging = M5.Power.isCharging();
 
 	float volt_mV = M5.Power.getBatteryVoltage();
-	int percent = (fMAX_BAT_mV - volt_mV) * 100. / fMAX_BAT_mV;
+	int percent = (volt_mV - fMIN_BAT_mV) * 100. / fMAX_BAT_mV;
 
 	int current_mA = M5.Power.getBatteryCurrent();
 
