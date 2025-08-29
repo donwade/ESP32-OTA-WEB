@@ -9,10 +9,11 @@
 #include <M5Unified.h>
 #include <SPI.h>
 #include <SD.h>
+#include "m5Core2-only.h"
 
 
-#define MAIN_GPS_FILENAME "/gps.db"
-#define BACkUP_GPS_FILENAME "/backup.db"
+#define MAIN_GPS_FILENAME "/xxxx.db"
+#define BACkUP_GPS_FILENAME "/yyyy.db"
 
 
 uint8_t copyBuffer[64];
@@ -91,22 +92,15 @@ bool cloneFile (char *src_filename, char *dest_filename)
 void * savingMode(BUTTON_EVENT some_key)
 {
 	IPAddress ip;
-
-	const float fMAX_BAT_mV = 4200;
-	const float fMIN_BAT_mV = 3100;
-
-    bool isCharging = M5.Power.isCharging();
-    
-    float volt_mV = M5.Power.getBatteryVoltage();
-    int percent = (fMAX_BAT_mV - volt_mV) * 100. / fMAX_BAT_mV;
+	batt_stats battery;
 	
-    int current_mA = M5.Power.getBatteryCurrent();
-	
+	getBatteryStats (&battery);
+
 	cprintf(_YELLOW, 1, "%3.1fv %3d%% %4dmA %s", 
-						volt_mV/1000.,
-						percent,
-						current_mA,
-						isCharging ? "CHG":"DIS");
+						battery.volt_mV/1000.,
+						battery.percent,
+						battery.current_mA,
+						battery.isCharging ? "CHG":"DIS");
 
 
 	cprintf(_GREEN, 2, "host= %s", LOCAL_HOSTNAME);

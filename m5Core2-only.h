@@ -17,6 +17,17 @@ extern void lsetTextColor(uint32_t FGND, uint32_t BKGND);
 #define WIDGET_FONT  &fonts::FreeMonoBoldOblique12pt7b
 #define DEFAULT_FONT &fonts::FreeMono12pt7b
 
+//------------------------------------------------------------
+typedef struct 
+{
+	bool isCharging;
+	float volt_mV;
+	int percent;
+	int current_mA;
+}batt_stats;
+
+bool getBatteryStats (batt_stats *reply);
+
 
 
 

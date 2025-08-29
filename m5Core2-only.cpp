@@ -57,7 +57,26 @@ void lclear(void)
 #include <Fonts/FreeMono12pt7b.h>
 
 //--------------------------------------------------
+bool getBatteryStats (batt_stats *reply)
+{
+	const float fMAX_BAT_mV = 4200;
+	const float fMIN_BAT_mV = 3100;
 
+	bool isCharging = M5.Power.isCharging();
+
+	float volt_mV = M5.Power.getBatteryVoltage();
+	int percent = (fMAX_BAT_mV - volt_mV) * 100. / fMAX_BAT_mV;
+
+	int current_mA = M5.Power.getBatteryCurrent();
+
+	reply->isCharging = isCharging;
+	reply->current_mA = current_mA;
+	reply->percent = percent;
+	reply->volt_mV = volt_mV;
+	
+	return true;
+}
+//--------------------------------------------------
 void setup_M5(void)
 {
 	M5.begin();
