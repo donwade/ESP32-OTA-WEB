@@ -468,7 +468,7 @@ void SendXML() {
   strcat(XML, xml_tbuf);
 
 
-  sprintf(xml_tbuf, "<REBOOTS>%d</REBOOTS>\n", 5);
+  sprintf(xml_tbuf, "<REBOOTS1>%d</REBOOTS1>\n", 5);
   strcat(XML, xml_tbuf);
 
 

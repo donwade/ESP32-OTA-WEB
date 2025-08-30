@@ -232,50 +232,54 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
       <div class="category">Sensor Readings</div>
       <div style="border-radius: 10px !important;">
       <table style="width:50%">
-      <colgroup>
-         <col span="1" style="background-color:rgb(230,230,230); width: 20%; color:#000000 ;">
-         <col span="1" style="background-color:rgb(200,200,200); width: 15%; color:#000000 ;">
-         <col span="1" style="background-color:rgb(180,180,180); width: 15%; color:#000000 ;">
-      </colgroup>
+          <colgroup>
+             <col span="1" style="background-color:rgb(230,230,230); width: 20%; color:#000000 ;">
+             <col span="1" style="background-color:rgb(200,200,200); width: 15%; color:#000000 ;">
+             <col span="1" style="background-color:rgb(180,180,180); width: 15%; color:#000000 ;">
+          </colgroup>
 
-      <col span="2"style="background-color:rgb(0,0,0); color:#FFFFFF">
-      <col span="2"style="background-color:rgb(0,0,0); color:#FFFFFF">
-      <col span="2"style="background-color:rgb(0,0,0); color:#FFFFFF">
+          <col span="2"style="background-color:rgb(0,0,0); color:#FFFFFF">
+          <col span="2"style="background-color:rgb(0,0,0); color:#FFFFFF">
+          <col span="2"style="background-color:rgb(0,0,0); color:#FFFFFF">
 
-      <tr>
-        <th colspan="1"><div class="heading">Pin</div></th>
-        <th colspan="1"><div class="heading">Bits</div></th>
-        <th colspan="1"><div class="heading">  mV</div></th>
-      </tr>
-
-      <tr>
-        <td><div class="bodytext">Radar pin 32</div></td>
-        <td><div class="tabledata" id = "r1"></div></td>
-        <td><div class="tabledata" id = "r2"></div></td>
-      </tr>
-
-      <tr>
-        <td><div class="bodytext">IM BATMAN</div></td>
-        <td><div class="tabledata" id = "b1"></div></td>
-        <td><div class="tabledata" id = "b2"></div></td>
-      </tr>
-
-      <tr>
-        <td><div class="bodytext">IM CURRENT</div></td>
-        <td><div class="tabledata" id = "c1"></div></td>
-        <td><div class="tabledata" id = "c2"></div></td>
-      </tr>
-
-       <tr>
-        <td><div class="bodytext">REBOOTS</div></td>
-        <td><div class="tabledata" id = "r0"></div></td>
-      </tr>
-
-      <tr>
-        <td><div class="bodytext">Brownouts</div></td>
-        <td><div class="tabledata" id = "x0"></div></td>
+          <tr>
+            <th colspan="1"><div class="heading">Pin</div></th>
+            <th colspan="1"><div class="heading">Bits</div></th>
+            <th colspan="1"><div class="heading">  mV</div></th>
           </tr>
-            <tr>
+
+          <tr>
+            <td><div class="bodytext">Radar pin 32</div></td>
+            <td><div class="tabledata" id = "r1"></div></td>
+            <td><div class="tabledata" id = "r2"></div></td>
+          </tr>
+
+          <tr>
+            <td><div class="bodytext">VOLTAGE</div></td>
+            <td><div class="tabledata" id = "b1"></div></td>
+            <td><div class="tabledata" id = "b2"></div></td>
+          </tr>
+
+          <tr>
+            <td><div class="bodytext">CURRENT</div></td>
+            <td><div class="tabledata" id = "c1"></div></td>
+            <td><div class="tabledata" id = "c2"></div></td>
+          </tr>
+
+           <tr>
+            <td><div class="bodytext">REBOOTS</div></td>
+            <td><div class="tabledata" id = "r0"></div></td>
+            <td><div class="tabledata" id = "r1"></div></td>
+          </tr>
+
+           <tr>
+            <td><div class="bodytext">BROWNOUTS</div></td>
+            <td><div class="tabledata" id = "z0"></div></td>
+            <td><div class="tabledata" id = "z1"></div></td>
+          </tr>
+
+
+          <tr>
             <td><div class="bodytext">Digital switch</div></td>
             <td><div class="tabledata" id = "switch"></div></td>
           </tr>
@@ -467,13 +471,22 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
 
           //-----------------------------------------------
 
-        xmldoc = xmlResponse.getElementsByTagName("REBOOTS");
+        xmldoc = xmlResponse.getElementsByTagName("REBOOTS1");
         message = xmldoc[0].firstChild.nodeValue;
         document.getElementById("e1").innerHTML=message;
         document.getElementById("e1").style.width=(barwidth+"%");
         // you can set color dynamically, maybe blue below a value, red above
         document.getElementById("e1").style.backgroundColor=color;
         //document.getElementById("e1").style.borderRadius="5px";
+
+        xmldoc = xmlResponse.getElementsByTagName("REBOOTS2");
+        message = xmldoc[0].firstChild.nodeValue;
+        document.getElementById("e2").innerHTML=message;
+        document.getElementById("e2").style.width=(barwidth+"%");
+        // you can set color dynamically, maybe blue below a value, red above
+        document.getElementById("e2").style.backgroundColor=color;
+        //document.getElementById("e2").style.borderRadius="5px";
+
 
         //-----------------------------------------------
 
