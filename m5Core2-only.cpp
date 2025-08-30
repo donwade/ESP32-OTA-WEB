@@ -1,6 +1,7 @@
 #include <M5Unified.h>
 #include "m5Core2-only.h"
 #include "viewController.h"
+#include "RTC.h"
 
 static uint8_t vert = 0;
 
@@ -78,6 +79,8 @@ bool getBatteryStats (batt_stats *reply)
 	return true;
 }
 //--------------------------------------------------
+static uint32_t startUTC;
+
 void setup_M5(void)
 {
 	M5.begin();
@@ -97,6 +100,13 @@ void setup_M5(void)
 	Serial.begin(115200);
 		
 	setup_button();
+	
+	startUTC = getUTCfromRTC();
+}
+//-------------------------------------------------------------
+uint32_t uptime(void)
+{
+	return getUTCfromRTC() - startUTC;
 }
 
 void lsetTextColor(uint32_t FGND, uint32_t BKGND)

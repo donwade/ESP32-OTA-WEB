@@ -28,7 +28,8 @@ uint32_t getUTCfromRTC(void)
 	
 	M5.Rtc.getTime(&TimeStruct);
 	M5.Rtc.getDate(&DateStruct);
-	
+
+	/*
 	Serial.printf("COLD READ RTC time %02d:%02d:%02d\n",
 	TimeStruct.hours,
 	TimeStruct.minutes,
@@ -38,6 +39,7 @@ uint32_t getUTCfromRTC(void)
 	DateStruct.date,
 	DateStruct.month,
 	DateStruct.year);
+	*/
 
 	tmpTime.Hour = TimeStruct.hours;
 	tmpTime.Minute = TimeStruct.minutes;
@@ -52,7 +54,7 @@ uint32_t getUTCfromRTC(void)
 	//thank god I dont have to calc seconds in month 
 	UTC =  makeTime(tmpTime);
 	
-	Serial.printf("calculated UTC from RTC = %d\n", UTC);
+	//Serial.printf("calculated UTC from RTC = %d\n", UTC);
 	return UTC;
 }
 //---------------------------------------------------------------------------

@@ -267,9 +267,9 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
           </tr>
 
            <tr>
-            <td><div class="bodytext">REBOOTS</div></td>
-            <td><div class="tabledata" id = "r0"></div></td>
-            <td><div class="tabledata" id = "r1"></div></td>
+            <td><div class="bodytext">IM BOOTS</div></td>
+            <td><div class="tabledata" id = "k0"></div></td>
+            <td><div class="tabledata" id = "k1"></div></td>
           </tr>
 
            <tr>

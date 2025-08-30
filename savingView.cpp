@@ -116,6 +116,8 @@ void * savingMode(BUTTON_EVENT some_key)
 	
 	// print the received signal strength:
 	cprintf(_GREEN, 4, "%d dBm", WiFi.RSSI());
+
+	cprintf(_CYAN, 6, "up = %d S", uptime());
 	
 	// all display updates done ... just keys left
 	if (some_key == DISPLAY_REFRESH) return (void*) savingMode;

@@ -68,6 +68,7 @@
 #include "viewController.h"
 #include "rtc_wdt.h"
 #include "esp_debug_helpers.h"
+#include "RTC.h"
 
 void runDisplayTask(void *not_used);
 void runPingTask(void *not_used);
@@ -467,8 +468,13 @@ void SendXML() {
   sprintf(xml_tbuf, "<BATCURRENT2>%s</BATCURRENT2>\n", batman.isCharging ? "CHARGE" : "DISCHARGE");
   strcat(XML, xml_tbuf);
 
+  sprintf(xml_tbuf, "<UPTIME1>%d</UPTIME1>\n", uptime());
+  strcat(XML, xml_tbuf);
 
   sprintf(xml_tbuf, "<REBOOTS1>%d</REBOOTS1>\n", 5);
+  strcat(XML, xml_tbuf);
+
+  sprintf(xml_tbuf, "<REBOOTS2>%d</REBOOTS2>\n", 69);
   strcat(XML, xml_tbuf);
 
 
