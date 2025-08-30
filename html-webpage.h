@@ -255,19 +255,19 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
       </tr>
 
       <tr>
-        <td><div class="bodytext">BATVOLTAGE1</div></td>
+        <td><div class="bodytext">IM BATMAN</div></td>
         <td><div class="tabledata" id = "b1"></div></td>
         <td><div class="tabledata" id = "b2"></div></td>
       </tr>
 
       <tr>
-        <td><div class="bodytext">BATCURRENT1</div></td>
+        <td><div class="bodytext">IM CURRENT</div></td>
         <td><div class="tabledata" id = "c1"></div></td>
         <td><div class="tabledata" id = "c2"></div></td>
       </tr>
 
-      <tr>
-        <td><div class="bodytext">Reboots</div></td>
+       <tr>
+        <td><div class="bodytext">REBOOTS</div></td>
         <td><div class="tabledata" id = "r0"></div></td>
       </tr>
 
@@ -439,18 +439,20 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
         xmldoc = xmlResponse.getElementsByTagName("BATVOLTAGE2");
         message = xmldoc[0].firstChild.nodeValue;
         document.getElementById("b2").innerHTML=message;
-        document.getElementById("b2").style.width=(width+"%");
+        document.getElementById("b2").style.width=(barwidth+"%");
+        // you can set color dynamically, maybe blue below a value, red above
         document.getElementById("b2").style.backgroundColor=color;
-        //document.getElementById("b2").style.borderRadius="10px";
+        //document.getElementById("b2").style.borderRadius="5px";
 
         //-----------------------------------------------
- 
+
         xmldoc = xmlResponse.getElementsByTagName("BATCURRENT1");
         message = xmldoc[0].firstChild.nodeValue;
         document.getElementById("c1").innerHTML=message;
-        document.getElementById("c1").style.width=(width+"%");
+        document.getElementById("c1").style.width=(barwidth+"%");
+        // you can set color dynamically, maybe blue below a value, red above
         document.getElementById("c1").style.backgroundColor=color;
-        //document.getElementById("c1").style.borderRadius="10px";
+        //document.getElementById("c1").style.borderRadius="5px";
 
         //-----------------------------------------------
 
@@ -462,7 +464,19 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
         document.getElementById("c2").style.backgroundColor=color;
         //document.getElementById("c2").style.borderRadius="5px";
 
+
+          //-----------------------------------------------
+
+        xmldoc = xmlResponse.getElementsByTagName("REBOOTS");
+        message = xmldoc[0].firstChild.nodeValue;
+        document.getElementById("e1").innerHTML=message;
+        document.getElementById("e1").style.width=(barwidth+"%");
+        // you can set color dynamically, maybe blue below a value, red above
+        document.getElementById("e1").style.backgroundColor=color;
+        //document.getElementById("e1").style.borderRadius="5px";
+
         //-----------------------------------------------
+
 
         xmldoc = xmlResponse.getElementsByTagName("LED");
         message = xmldoc[0].firstChild.nodeValue;
