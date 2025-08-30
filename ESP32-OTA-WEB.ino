@@ -460,6 +460,20 @@ void SendXML() {
   sprintf(xml_tbuf, "<V1>%d.%d</V1>\n", (int) (A2D_P33_mV), abs((int) (A2D_P33_mV * 10)  - ((int) (A2D_P33_mV) * 10)));
   strcat(XML, xml_tbuf);
 
+
+  batt_stats batman;
+  getBatteryStats (&batman);
+
+  // send battery voltage
+  sprintf(xml_tbuf, "<BatVoltage>%d.%d</BatVoltage>\n",(int) batman.volt_mV, (int) batman.percent);
+  strcat(XML, xml_tbuf);
+
+  // send battery current
+  sprintf(xml_tbuf, "<BatCurrent>%d.%d</BatCurrent>\n", (int) batman.current_mA, (int) batman.isCharging);
+  strcat(XML, xml_tbuf);
+
+
+
   // show led0 status
   if (LED0) {
     strcat(XML, "<LED>1</LED>\n");
