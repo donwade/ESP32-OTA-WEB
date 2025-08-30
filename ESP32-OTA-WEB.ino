@@ -444,22 +444,11 @@ void SendXML() {
 
   strcpy(XML, "<?xml version = '1.0'?>\n<Data>\n");
 
-  // send a2d 0 value
-  sprintf(xml_tbuf, "<B0>%d</B0>\n", A2D_P32);
+  sprintf(xml_tbuf, "<RADAR1>%d</RADAR1>\n", A2D_P32);
   strcat(XML, xml_tbuf);
   
-  // send voltage ad2-0
-  sprintf(xml_tbuf, "<V0>%d.%d</V0>\n", (int) (A2D_P32_mV), abs((int) (A2D_P32_mV * 10)  - ((int) (A2D_P32_mV) * 10)));
+  sprintf(xml_tbuf, "<RADAR2>%d</RADAR2>\n", (int) (A2D_P32_mV));
   strcat(XML, xml_tbuf);
-
-  // send a2d 1 value
-  sprintf(xml_tbuf, "<B1>%d</B1>\n", A2D_P33);
-  strcat(XML, xml_tbuf);
-  
-  // send voltage a2d-1
-  sprintf(xml_tbuf, "<V1>%d.%d</V1>\n", (int) (A2D_P33_mV), abs((int) (A2D_P33_mV * 10)  - ((int) (A2D_P33_mV) * 10)));
-  strcat(XML, xml_tbuf);
-
 
   batt_stats batman;
   getBatteryStats (&batman);

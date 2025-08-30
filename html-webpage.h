@@ -399,8 +399,7 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
         document.getElementById("time").innerHTML = dt.toLocaleTimeString();
         document.getElementById("date").innerHTML = dt.toLocaleDateString();
     
-        // A0
-        xmldoc = xmlResponse.getElementsByTagName("B0"); //bits for A0
+        xmldoc = xmlResponse.getElementsByTagName("RADAR1");
         message = xmldoc[0].firstChild.nodeValue;
       
         if (message > 2048){
@@ -419,7 +418,7 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
         //document.getElementById("b0").style.backgroundColor=color;
         //document.getElementById("b0").style.borderRadius="5px";
         
-        xmldoc = xmlResponse.getElementsByTagName("V0"); //volts for A0
+        xmldoc = xmlResponse.getElementsByTagName("RADAR2"); //volts for A0
         message = xmldoc[0].firstChild.nodeValue;
         document.getElementById("v0").innerHTML=message;
         document.getElementById("v0").style.width=(barwidth+"%");
