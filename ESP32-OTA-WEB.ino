@@ -454,11 +454,17 @@ void SendXML() {
   getBatteryStats (&batman);
 
   // send battery voltage
-  sprintf(xml_tbuf, "<BatVoltage>%d.%d</BatVoltage>\n",(int) batman.volt_mV, (int) batman.percent);
+  sprintf(xml_tbuf, "<BATVOLTAGE1>%5.2f v</BATVOLTAGE1>\n", batman.volt_mV/1000.);
   strcat(XML, xml_tbuf);
 
-  // send battery current
-  sprintf(xml_tbuf, "<BatCurrent>%d.%d</BatCurrent>\n", (int) batman.current_mA, (int) batman.isCharging);
+  sprintf(xml_tbuf, "<BATVOLTAGE2>%d%% </BATVOLTAGE2>\n", batman.percent);
+  strcat(XML, xml_tbuf);
+
+
+  sprintf(xml_tbuf, "<BATCURRENT1>%d</BATCURRENT1>\n", batman.current_mA);
+  strcat(XML, xml_tbuf);
+
+  sprintf(xml_tbuf, "<BATCURRENT2>%s</BATCURRENT2>\n", batman.isCharging ? "CHARGE" : "DISCHARGE");
   strcat(XML, xml_tbuf);
 
 

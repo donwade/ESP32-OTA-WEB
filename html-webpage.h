@@ -96,7 +96,7 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
       color: #FFFFFF;
       line-height: 20px;
       transition: all 200ms ease-in-out;
-      background-color: #00AA00;
+      background-color: #000000;
     }
     .fanrpmslider {
       width: 30%;
@@ -233,48 +233,52 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
       <div style="border-radius: 10px !important;">
       <table style="width:50%">
       <colgroup>
-        <col span="1" style="background-color:rgb(230,230,230); width: 20%; color:#000000 ;">
-        <col span="1" style="background-color:rgb(200,200,200); width: 15%; color:#000000 ;">
-        <col span="1" style="background-color:rgb(180,180,180); width: 15%; color:#000000 ;">
+         <col span="1" style="background-color:rgb(230,230,230); width: 20%; color:#000000 ;">
+         <col span="1" style="background-color:rgb(200,200,200); width: 15%; color:#000000 ;">
+         <col span="1" style="background-color:rgb(180,180,180); width: 15%; color:#000000 ;">
       </colgroup>
+
       <col span="2"style="background-color:rgb(0,0,0); color:#FFFFFF">
       <col span="2"style="background-color:rgb(0,0,0); color:#FFFFFF">
       <col span="2"style="background-color:rgb(0,0,0); color:#FFFFFF">
+
       <tr>
         <th colspan="1"><div class="heading">Pin</div></th>
         <th colspan="1"><div class="heading">Bits</div></th>
         <th colspan="1"><div class="heading">  mV</div></th>
       </tr>
+
       <tr>
         <td><div class="bodytext">Radar pin 32</div></td>
-        <td><div class="tabledata" id = "b0"></div></td>
-        <td><div class="tabledata" id = "v0"></div></td>
+        <td><div class="tabledata" id = "r1"></div></td>
+        <td><div class="tabledata" id = "r2"></div></td>
       </tr>
+
       <tr>
-        <td><div class="bodytext">Analog pin 35</div></td>
+        <td><div class="bodytext">BATVOLTAGE1</div></td>
         <td><div class="tabledata" id = "b1"></div></td>
-        <td><div class="tabledata" id = "v1"></div></td>
+        <td><div class="tabledata" id = "b2"></div></td>
+      </tr>
+
       <tr>
-        <td><div class="bodytext">BatVoltage</div></td>
-        <td><div class="tabledata" id = "voltage"></div></td>
-        <td><div class="tabledata" id = "voltpct"></div></td>
+        <td><div class="bodytext">BATCURRENT1</div></td>
+        <td><div class="tabledata" id = "c1"></div></td>
+        <td><div class="tabledata" id = "c2"></div></td>
       </tr>
-        <td><div class="bodytext">Bat Current</div></td>
-        <td><div class="tabledata" id = "mA"></div></td>
-        <td><div class="tabledata" id = "mA-state"></div></td>
-      </tr>
+
       <tr>
         <td><div class="bodytext">Reboots</div></td>
         <td><div class="tabledata" id = "r0"></div></td>
       </tr>
+
       <tr>
         <td><div class="bodytext">Brownouts</div></td>
         <td><div class="tabledata" id = "x0"></div></td>
-      </tr>
-        <tr>
-        <td><div class="bodytext">Digital switch</div></td>
-        <td><div class="tabledata" id = "switch"></div></td>
-      </tr>
+          </tr>
+            <tr>
+            <td><div class="bodytext">Digital switch</div></td>
+            <td><div class="tabledata" id = "switch"></div></td>
+          </tr>
       </table>
     </div>
     <br>
@@ -401,69 +405,65 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
     
         xmldoc = xmlResponse.getElementsByTagName("RADAR1");
         message = xmldoc[0].firstChild.nodeValue;
-      
-        if (message > 2048){
-        color = "#aa0000";
-        }
-        else {
-          color = "#0000aa";
-        }
-        
         barwidth = message / 40.95;
-        document.getElementById("b0").innerHTML=message;
-        document.getElementById("b0").style.width=(barwidth+"%");
+        document.getElementById("r1").innerHTML=message;
+        document.getElementById("r1").style.width=(barwidth+"%");
 
         // if you want to use global color set above in <style> section
         // other wise uncomment and let the value dictate the color
-        //document.getElementById("b0").style.backgroundColor=color;
-        //document.getElementById("b0").style.borderRadius="5px";
+        //document.getElementById("r1").style.backgroundColor=color;
+        //document.getElementById("r1").style.borderRadius="5px";
+
+        //-----------------------------------------------
         
-        xmldoc = xmlResponse.getElementsByTagName("RADAR2"); //volts for A0
+        xmldoc = xmlResponse.getElementsByTagName("RADAR2");
         message = xmldoc[0].firstChild.nodeValue;
-        document.getElementById("v0").innerHTML=message;
-        document.getElementById("v0").style.width=(barwidth+"%");
-
+        document.getElementById("r2").innerHTML=message;
+        document.getElementById("r2").style.width=(barwidth+"%");
         // you can set color dynamically, maybe blue below a value, red above
-        document.getElementById("v0").style.backgroundColor=color;
-        //document.getElementById("v0").style.borderRadius="5px";
-  
-        // B1
-        xmldoc = xmlResponse.getElementsByTagName("B1");
-        message = xmldoc[0].firstChild.nodeValue;
-        if (message > 2048){
-        color = "#aa0000";
-        }
-        else {
-          color = "#0000aa";
-        }
+        document.getElementById("r2").style.backgroundColor=color;
+        //document.getElementById("r2").style.borderRadius="5px";
 
+        //-----------------------------------------------
+
+        xmldoc = xmlResponse.getElementsByTagName("BATVOLTAGE1");
+        message = xmldoc[0].firstChild.nodeValue;
         document.getElementById("b1").innerHTML=message;
-        width = message / 40.95;
-        document.getElementById("b1").style.width=(width+"%");
+        document.getElementById("b1").style.width=(barwidth+"%");
+        // you can set color dynamically, maybe blue below a value, red above
         document.getElementById("b1").style.backgroundColor=color;
-        //document.getElementById("b1").style.borderRadius="10px";
-      
-        xmldoc = xmlResponse.getElementsByTagName("V1");
-        message = xmldoc[0].firstChild.nodeValue;
-        document.getElementById("v1").innerHTML=message;
-        document.getElementById("v1").style.width=(width+"%");
-        document.getElementById("v1").style.backgroundColor=color;
-        //document.getElementById("v1").style.borderRadius="10px";
+        //document.getElementById("b1").style.borderRadius="5px";
 
-        xmldoc = xmlResponse.getElementsByTagName("BatVoltage");
+        //-----------------------------------------------
+
+        xmldoc = xmlResponse.getElementsByTagName("BATVOLTAGE2");
         message = xmldoc[0].firstChild.nodeValue;
-        document.getElementById("voltage").innerHTML=message;
-        document.getElementById("voltage").style.width=(width+"%");
-        document.getElementById("voltage").style.backgroundColor=color;
-        //document.getElementById("voltage").style.borderRadius="10px";
+        document.getElementById("b2").innerHTML=message;
+        document.getElementById("b2").style.width=(width+"%");
+        document.getElementById("b2").style.backgroundColor=color;
+        //document.getElementById("b2").style.borderRadius="10px";
+
+        //-----------------------------------------------
  
-        xmldoc = xmlResponse.getElementsByTagName("BatCurrent");
+        xmldoc = xmlResponse.getElementsByTagName("BATCURRENT1");
         message = xmldoc[0].firstChild.nodeValue;
-        document.getElementById("voltage").innerHTML=message;
-        document.getElementById("voltage").style.width=(width+"%");
-        document.getElementById("voltage").style.backgroundColor=color;
-         //document.getElementById("voltage").style.borderRadius="10px";
-    
+        document.getElementById("c1").innerHTML=message;
+        document.getElementById("c1").style.width=(width+"%");
+        document.getElementById("c1").style.backgroundColor=color;
+        //document.getElementById("c1").style.borderRadius="10px";
+
+        //-----------------------------------------------
+
+        xmldoc = xmlResponse.getElementsByTagName("BATCURRENT2");
+        message = xmldoc[0].firstChild.nodeValue;
+        document.getElementById("c2").innerHTML=message;
+        document.getElementById("c2").style.width=(barwidth+"%");
+        // you can set color dynamically, maybe blue below a value, red above
+        document.getElementById("c2").style.backgroundColor=color;
+        //document.getElementById("c2").style.borderRadius="5px";
+
+        //-----------------------------------------------
+
         xmldoc = xmlResponse.getElementsByTagName("LED");
         message = xmldoc[0].firstChild.nodeValue;
     
