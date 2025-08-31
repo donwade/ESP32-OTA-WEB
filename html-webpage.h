@@ -271,7 +271,6 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
              <td><div class="tabledata" id = "u0"></div></td>
              <td><div class="tabledata" id = "u1"></div></td>
            </tr>
-           
 
            <tr>
             <td><div class="bodytext">IM BOOTS</div></td>

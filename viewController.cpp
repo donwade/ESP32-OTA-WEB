@@ -150,7 +150,7 @@ void runPingTask(void *not_used)
 		cprintf(_CYAN, 5, "Ping fail");
 		Serial.println("Ping failed.");
 	}		
-	delay(1000);
+	delay(2000);
 }
 
 void runLightBarTask(void *not_used)

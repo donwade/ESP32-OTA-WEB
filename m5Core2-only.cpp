@@ -71,7 +71,9 @@ bool getBatteryStats (batt_stats *reply)
 
 	int current_mA = M5.Power.getBatteryCurrent();
 
-	reply->isCharging = isCharging;
+	// 0 = stopped charging. +1 charging , -1 discharging
+	reply->chargeDirection = (current_mA == 0) ? 0 : isCharging ? +1 : -1;
+	
 	reply->current_mA = current_mA;
 	reply->percent = percent;
 	reply->volt_mV = volt_mV;

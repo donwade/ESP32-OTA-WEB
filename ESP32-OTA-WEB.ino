@@ -69,6 +69,7 @@
 #include "rtc_wdt.h"
 #include "esp_debug_helpers.h"
 #include "RTC.h"
+#include "batmon.h"
 
 void runDisplayTask(void *not_used);
 void runPingTask(void *not_used);
@@ -102,7 +103,6 @@ void runPingTask(void *not_used);
 #define PIN_FAN_PMW 		 -1 // pin 27 and is a PWM signal to control a fan speed
 #define PIN_LED 			 -1 //On board LED
 #define P32_WHT_RDR			 32 // 
-#define P33_YLW_NC 			 33 // some analog input sensor
 #endif
 
 // variables to store measure data and sensor states
@@ -156,7 +156,6 @@ void setup() {
   pinMode(PIN_LED, OUTPUT);
 
   pinMode(P32_WHT_RDR, INPUT); //was analogRead(P32_WHT_RDR);
-  pinMode(P33_YLW_NC, INPUT); //wad analogRead(P33_YLW_NC);
 
   // turn off led
   LED0 = false;
@@ -256,7 +255,14 @@ spawnTaskAndDogV2( runPingTask, 	//(void * not_used)TaskFunction_t pvTaskCode,
 				   4				//UBaseType_t uxPriority)
 				   );
 
-
+#if 1
+spawnTaskAndDogV2( runBatmonTask, 	//(void * not_used)TaskFunction_t pvTaskCode,
+				   "BatmonTask",  	//const char * const pcName,
+				   1024 * 4,		//const uint32_t usStackDepth,
+				   NULL,			//void * const pvParameters,
+				   4				//UBaseType_t uxPriority)
+				   );
+#endif
 }
 
 void loop() {
@@ -279,7 +285,6 @@ void loop() {
     //Serial.println("Reading Sensors");
     lastSensorTime = millis();
     A2D_P32 =  digitalRead(P32_WHT_RDR); //analogRead(P32_WHT_RDR);
-    A2D_P33 =  digitalRead(P33_YLW_NC); //analogRead(P33_YLW_NC);
 
 	if (p32 != A2D_P32)
 	{
@@ -441,6 +446,8 @@ void SendWebsite() {
 // I avoid string data types at all cost hence all the char mainipulation code
 void SendXML() {
 
+  Serial.printf("%s:%d %s\n", __FUNCTION__, __LINE__, format_date_time());
+
   // Serial.println("sending xml");
 
   strcpy(XML, "<?xml version = '1.0'?>\n<Data>\n");
@@ -465,7 +472,7 @@ void SendXML() {
   sprintf(xml_tbuf, "<BATCURRENT1>%d</BATCURRENT1>\n", batman.current_mA);
   strcat(XML, xml_tbuf);
 
-  sprintf(xml_tbuf, "<BATCURRENT2>%s</BATCURRENT2>\n", batman.isCharging ? "CHARGE" : "DISCHARGE");
+  sprintf(xml_tbuf, "<BATCURRENT2>%s</BATCURRENT2>\n", batman.chargeDirection ? "CHARGE" : "DISCHARGE");
   strcat(XML, xml_tbuf);
 
   sprintf(xml_tbuf, "<UPTIME1>%d</UPTIME1>\n", uptime());

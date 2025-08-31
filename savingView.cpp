@@ -10,6 +10,8 @@
 #include <SPI.h>
 #include <SD.h>
 #include "m5Core2-only.h"
+#include "batmon.h"
+
 
 
 #define MAIN_GPS_FILENAME "/xxxx.db"
@@ -100,7 +102,7 @@ void * savingMode(BUTTON_EVENT some_key)
 						battery.volt_mV/1000.,
 						battery.percent,
 						battery.current_mA,
-						battery.isCharging ? "CHG":"DIS");
+						battery.chargeDirection ? "CHG":"DIS");
 
 
 	cprintf(_GREEN, 2, "host= %s", LOCAL_HOSTNAME);
@@ -117,7 +119,11 @@ void * savingMode(BUTTON_EVENT some_key)
 	// print the received signal strength:
 	cprintf(_GREEN, 4, "%d dBm", WiFi.RSSI());
 
-	cprintf(_CYAN, 6, "up = %d S", uptime());
+	//cprintf(_CYAN, 6, "up = %d S", uptime());
+	
+	battmon data;
+	getBatmon(&data);
+	cprintf(_CYAN, 6, "up=%d dn=%d", data.chargeTime, data.dischargeTime);
 	
 	// all display updates done ... just keys left
 	if (some_key == DISPLAY_REFRESH) return (void*) savingMode;

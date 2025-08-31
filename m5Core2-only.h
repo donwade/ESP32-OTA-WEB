@@ -22,7 +22,7 @@ extern uint32_t uptime(void);
 //------------------------------------------------------------
 typedef struct 
 {
-	bool isCharging;
+	int8_t chargeDirection;
 	float volt_mV;
 	int percent;
 	int current_mA;
