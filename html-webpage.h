@@ -266,6 +266,13 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
             <td><div class="tabledata" id = "c2"></div></td>
           </tr>
 
+            <tr>
+             <td><div class="bodytext">IM UP</div></td>
+             <td><div class="tabledata" id = "u0"></div></td>
+             <td><div class="tabledata" id = "u1"></div></td>
+           </tr>
+           
+
            <tr>
             <td><div class="bodytext">IM BOOTS</div></td>
             <td><div class="tabledata" id = "k0"></div></td>
@@ -468,6 +475,17 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
         document.getElementById("c2").style.backgroundColor=color;
         //document.getElementById("c2").style.borderRadius="5px";
 
+          //-----------------------------------------------
+          
+          xmldoc = xmlResponse.getElementsByTagName("UPTIME1");
+          message = xmldoc[0].firstChild.nodeValue;
+          document.getElementById("u1").innerHTML=message;
+          document.getElementById("u1").style.width=(barwidth+"%");
+          // you can set color dynamically, maybe blue below a value, red above
+          document.getElementById("u1").style.backgroundColor=color;
+          //document.getElementById("u1").style.borderRadius="5px";
+          
+          
 
           //-----------------------------------------------
 
