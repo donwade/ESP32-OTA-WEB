@@ -9,9 +9,9 @@
 //-----------------------------------------------------------------
 char *format_date_time() 
 { //easy way to print date and time
-	static char tstring[40];
+	static char tstring[40]; 
 	sprintf(tstring, "%02d/%02d/%4d %02d:%02d:%02d", day(), month(), year(), hour(), minute(), second());
-	return tstring;
+	return tstring; 
 }
 
 //-----------------------------------------------------------------

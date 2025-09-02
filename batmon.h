@@ -5,6 +5,6 @@ typedef struct
 }battmon;
 
 void runBatmonTask(void *not_used);
-void getBatmon(battmon *who);
+void getBatmon(battmon *who); 
 
 

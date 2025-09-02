@@ -278,7 +278,7 @@ void ota_setup()
   while (WiFi.waitForConnectResult() != WL_CONNECTED) 
   {
     Serial.println("Connection Failed! Rebooting...");
-    delay(5000);
+    delay(5000); 
     ESP.restart();
   }
   

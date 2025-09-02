@@ -28,7 +28,7 @@ typedef struct
 	int current_mA;
 }batt_stats;
 
-bool getBatteryStats (batt_stats *reply);
+bool getBatteryStats (batt_stats *reply); 
 
 
 

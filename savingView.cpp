@@ -121,7 +121,7 @@ void * savingMode(BUTTON_EVENT some_key)
 
 	//cprintf(_CYAN, 6, "up = %d S", uptime());
 	
-	battmon data;
+	battmon data;  
 	getBatmon(&data);
 	cprintf(_CYAN, 6, "up=%d dn=%d", data.chargeTime, data.dischargeTime);
 	

@@ -42,7 +42,7 @@ void setup_watchdogs(void)
 // CORE 0 has WDT DISABLED when the RTOS was built
 // so don't bother putting anything on 0 or it will crash.
 
-#define DEFAULT_CORE 1   
+#define DEFAULT_CORE 1     
 
 typedef struct dogTaskData
 { 

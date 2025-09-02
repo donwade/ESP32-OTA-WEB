@@ -9,9 +9,9 @@ static uint32_t _lastTime = 0;
 static uint32_t _chargeTime = 0;
 static uint32_t _dischargeTime = 0;
 
-void getBatmon(battmon *who)
+void getBatmon(battmon *who) 
 {
-	who->chargeTime = _chargeTime/10;
+	who->chargeTime = _chargeTime/10; 
 	who->dischargeTime = _dischargeTime/10;
 }
 

@@ -232,63 +232,44 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
       <div class="category">Sensor Readings</div>
       <div style="border-radius: 10px !important;">
       <table style="width:50%">
-          <colgroup>
-             <col span="1" style="background-color:rgb(230,230,230); width: 20%; color:#000000 ;">
-             <col span="1" style="background-color:rgb(200,200,200); width: 15%; color:#000000 ;">
-             <col span="1" style="background-color:rgb(180,180,180); width: 15%; color:#000000 ;">
-          </colgroup>
+        <colgroup>
+         <col span="1" style="background-color:rgb(230,230,230); width: 20%; color:#000000 ;">
+         <col span="1" style="background-color:rgb(200,200,200); width: 15%; color:#000000 ;">
+         <col span="1" style="background-color:rgb(180,180,180); width: 15%; color:#000000 ;">
+        </colgroup>
 
-          <col span="2"style="background-color:rgb(0,0,0); color:#FFFFFF">
-          <col span="2"style="background-color:rgb(0,0,0); color:#FFFFFF">
-          <col span="2"style="background-color:rgb(0,0,0); color:#FFFFFF">
+        <col span="2"style="background-color:rgb(0,0,0); color:#FFFFFF">
+        <col span="2"style="background-color:rgb(0,0,0); color:#FFFFFF">
+        <col span="2"style="background-color:rgb(0,0,0); color:#FFFFFF">
 
-          <tr>
-            <th colspan="1"><div class="heading">Pin</div></th>
-            <th colspan="1"><div class="heading">Bits</div></th>
-            <th colspan="1"><div class="heading">  mV</div></th>
-          </tr>
+        <tr>
+        <th colspan="1"><div class="heading">Pin</div></th>
+        <th colspan="1"><div class="heading">Bits</div></th>
+        <th colspan="1"><div class="heading">  mV</div></th>
+        </tr>
 
-          <tr>
-            <td><div class="bodytext">Radar pin 32</div></td>
-            <td><div class="tabledata" id = "r1"></div></td>
-            <td><div class="tabledata" id = "r2"></div></td>
-          </tr>
+        <tr>
+        <td><div class="bodytext">Radar pin 32</div></td>
+        <td><div class="tabledata" id = "r1"></div></td>
+        <td><div class="tabledata" id = "r2"></div></td>
+        </tr>
 
-          <tr>
-            <td><div class="bodytext">VOLTAGE</div></td>
-            <td><div class="tabledata" id = "b1"></div></td>
-            <td><div class="tabledata" id = "b2"></div></td>
-          </tr>
+        <tr>
+        <td><div class="bodytext">VOLTAGE</div></td>
+        <td><div class="tabledata" id = "b1"></div></td>
+        <td><div class="tabledata" id = "b2"></div></td>
+        </tr>
 
-          <tr>
-            <td><div class="bodytext">CURRENT</div></td>
-            <td><div class="tabledata" id = "c1"></div></td>
-            <td><div class="tabledata" id = "c2"></div></td>
-          </tr>
+        <tr>
+        <td><div class="bodytext">CURRENT</div></td>
+        <td><div class="tabledata" id = "c1"></div></td>
+        <td><div class="tabledata" id = "c2"></div></td>
+        </tr>
 
-            <tr>
-             <td><div class="bodytext">IM UP</div></td>
-             <td><div class="tabledata" id = "u0"></div></td>
-             <td><div class="tabledata" id = "u1"></div></td>
-           </tr>
-
-           <tr>
-            <td><div class="bodytext">IM BOOTS</div></td>
-            <td><div class="tabledata" id = "k0"></div></td>
-            <td><div class="tabledata" id = "k1"></div></td>
-          </tr>
-
-           <tr>
-            <td><div class="bodytext">BROWNOUTS</div></td>
-            <td><div class="tabledata" id = "z0"></div></td>
-            <td><div class="tabledata" id = "z1"></div></td>
-          </tr>
-
-
-          <tr>
-            <td><div class="bodytext">Digital switch</div></td>
-            <td><div class="tabledata" id = "switch"></div></td>
-          </tr>
+        <tr>
+        <td><div class="bodytext">Digital switch</div></td>
+        <td><div class="tabledata" id = "switch"></div></td>
+        </tr>
       </table>
     </div>
     <br>
@@ -516,7 +497,7 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
           document.getElementById("btn0").style.borderRadius="10px";
 
         }
-        else{
+        else{ 
           document.getElementById("btn0").innerHTML="Turn OFF";
           document.getElementById("btn0").style.borderRadius="10px";
         }
@@ -527,7 +508,7 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
         if (message == 0){
           document.getElementById("switch").style.backgroundColor="rgb(200,0,0)";
           document.getElementById("switch").innerHTML="OFF";
-          document.getElementById("btn1").innerHTML="Turn ON";
+           document.getElementById("btn1").innerHTML="Turn ON";
           document.getElementById("btn1").style.borderRadius="10px";
           document.getElementById("switch").style.color="#0000AA"; 
         }

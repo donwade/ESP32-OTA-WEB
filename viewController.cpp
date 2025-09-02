@@ -148,7 +148,7 @@ void runPingTask(void *not_used)
 	else
 	{
 		cprintf(_CYAN, 5, "Ping fail");
-		Serial.println("Ping failed.");
+		Serial.println("Ping failed.");  
 	}		
 	delay(2000);
 }

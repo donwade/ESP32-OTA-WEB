@@ -2,7 +2,7 @@
 #include "freertos/task.h"
 #include "esp_task_wdt.h"
 
-#if 0
+#if 0 
 // stop on failure but always report success
 #define ABORT_ON_FAIL(functionCall, expected) ({                \
     int retval = functionCall;                                  \
