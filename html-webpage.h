@@ -272,6 +272,24 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
             <td><div class="tabledata" id = "u2"></div></td>
         </tr>
 
+
+// design point 3
+//   top level elements REBOOTS1 and REBOOTS2 are defined in 'design point1'
+
+//   this is where the the sub elements z1 and z2 are positioned in the web page
+//   in this case the simple *TEXT*  'REBOOTS' is the leftmost item in the row
+//   z1 will appear in the second position (aka REBOOTS1)
+//   z2 will appear next to z1 in the last position (aka REBOOTS2)
+
+// the bodytext field "REBOOTS" is unrelated to the element names,
+// we just make it similar to make the association between the row and elements be tighter.
+        <tr>
+            <td><div class="bodytext">REBOOTS</div></td>      // where description will appear
+            <td><div class="tabledata" id = "z1"></div></td>  // where REBOOT1 will appear
+            <td><div class="tabledata" id = "z2"></div></td>  // where REBOOT2 will appear
+        </tr>
+
+
         <tr>
             <td><div class="bodytext">Digital switch</div></td>
             <td><div class="tabledata" id = "switch"></div></td>
@@ -490,22 +508,28 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
 
 
           //-----------------------------------------------
-
+// design point 1
+//  1) define a name for a xml element (REBOOTS1)
+//  2) define sub element for POSITION names (z1)
+//  3) item 1 will be used for sending data across the wire.
+//  4) item 2 will be used internally in this webpage elsewhere for positioning
+//  5) make sure item 2 is carried thru to other weppage locations
+      
         xmldoc = xmlResponse.getElementsByTagName("REBOOTS1");
         message = xmldoc[0].firstChild.nodeValue;
-        document.getElementById("e1").innerHTML=message;
-        document.getElementById("e1").style.width=(barwidth+"%");
+        document.getElementById("z1").innerHTML=message;
+        document.getElementById("z1").style.width=(barwidth+"%");
         // you can set color dynamically, maybe blue below a value, red above
-        document.getElementById("e1").style.backgroundColor=color;
-        //document.getElementById("e1").style.borderRadius="5px";
+        document.getElementById("z1").style.backgroundColor=color;
+        //document.getElementById("z1").style.borderRadius="5px";
 
         xmldoc = xmlResponse.getElementsByTagName("REBOOTS2");
         message = xmldoc[0].firstChild.nodeValue;
-        document.getElementById("e2").innerHTML=message;
-        document.getElementById("e2").style.width=(barwidth+"%");
+        document.getElementById("z2").innerHTML=message;
+        document.getElementById("z2").style.width=(barwidth+"%");
         // you can set color dynamically, maybe blue below a value, red above
-        document.getElementById("e2").style.backgroundColor=color;
-        //document.getElementById("e2").style.borderRadius="5px";
+        document.getElementById("z2").style.backgroundColor=color;
+        //document.getElementById("z2").style.borderRadius="5px";
 
 
         //-----------------------------------------------

@@ -485,13 +485,11 @@ void SendXML() {
   sprintf(xml_tbuf, "<UDTIME2>%+d</UDTIME2>\n", who.chargeTime);
   strcat(XML, xml_tbuf);
 
-/*
   sprintf(xml_tbuf, "<REBOOTS1>%d</REBOOTS1>\n", 5);
   strcat(XML, xml_tbuf);
 
   sprintf(xml_tbuf, "<REBOOTS2>%d</REBOOTS2>\n", 69);
   strcat(XML, xml_tbuf);
-*/
 
   // show led0 status
   if (LED0) {
