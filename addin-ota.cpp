@@ -199,6 +199,146 @@ void brownout_init()
 extern void web_setup(void);
 extern void web_loop(void);
 
+static bool bNVSinit = false;
+static SemaphoreHandle_t NvMutex = xSemaphoreCreateMutex();
+
+//-------------------------------------------------------------
+
+bool init_NVram(void)
+{
+	bool retval = false; //fail
+	esp_err_t err;
+
+    err = nvs_flash_init();
+
+    if (err == ESP_ERR_NVS_NO_FREE_PAGES || err == ESP_ERR_NVS_NEW_VERSION_FOUND) 
+	{
+        // NVS partition was truncated and needs to be erased
+        // Retry nvs_flash_init
+        ESP_ERROR_CHECK(nvs_flash_erase());
+        err = nvs_flash_init();
+    }
+	
+    if (err)
+    {
+		ESP_ERROR_CHECK( err );
+		printf("%s FAILED INIT ***** \n", __FUNCTION__);
+		assert(err == 0);
+    }
+	else
+	{
+		printf("%s up and running\n", __FUNCTION__);
+		retval = true;
+	}
+	return retval;
+}
+
+//-------------------------------------------------------------
+
+bool nvinit_uint32_t(char *name, int32_t value)
+{
+    nvs_handle my_handle;
+	esp_err_t err;
+	bool retval = false; //fail
+	
+
+	xSemaphoreTake(NvMutex, portMAX_DELAY);
+    err = nvs_open("storage", NVS_READWRITE, &my_handle);
+	
+    if (err != ESP_OK) 
+	{
+        printf("%s:%d fail %s %s opening NVS handle!\n", 
+				__FUNCTION__, __LINE__, 
+				name, esp_err_to_name(err));
+    }
+	else 
+    {
+		err = nvs_set_i32(my_handle, name, value);
+		if (!err)
+		{
+			err = nvs_commit(my_handle);
+			if (err)
+				printf("%s:%d fail %s %s COMMIT!\n", 
+						__FUNCTION__, __LINE__, 
+								name, esp_err_to_name(err));
+			else
+				retval = true;
+		}
+    }
+
+	nvs_close(my_handle);
+	xSemaphoreGive(NvMutex);	
+	return retval;
+}
+
+//-------------------------------------------------------------
+
+bool nvget_uint32_t(char *name, int32_t *value)
+{
+
+    nvs_handle my_handle;
+	bool retval = false;
+	esp_err_t err;
+	
+	xSemaphoreTake(NvMutex, portMAX_DELAY);
+
+    err = nvs_open("storage", NVS_READWRITE, &my_handle);
+	
+    if (err != ESP_OK) 
+	{
+        printf("%s:%d fail %s %s open NVS handle!\n", 
+				__FUNCTION__, __LINE__, 
+				name, esp_err_to_name(err));
+		retval = false;
+    }
+	else 
+    {
+        err = nvs_get_i32(my_handle, name, value);
+		if (err == ESP_OK) retval = true;
+		
+    }
+	
+	nvs_close(my_handle);
+	xSemaphoreGive(NvMutex);	
+	
+	return retval;
+}
+
+//-------------------------------------------------------------
+
+bool nvset_uint32_t(char *name, int32_t value)
+{
+    nvs_handle my_handle;
+	esp_err_t err;
+	bool retval = false; //fail
+	
+	xSemaphoreTake(NvMutex, portMAX_DELAY);
+    err = nvs_open("storage", NVS_READWRITE, &my_handle);
+	
+    if (err != ESP_OK) 
+	{
+        printf("%s:%d fail %s %s opening NVS handle!\n", 
+				__FUNCTION__, __LINE__, 
+				name, esp_err_to_name(err));
+    }
+	else 
+    {
+        err = nvs_set_i32(my_handle, name, value);
+
+		if (err)
+			printf("%s:%d fail %s %s WRITING!\n", 
+					__FUNCTION__, __LINE__, 
+					name, esp_err_to_name(err));
+		else
+			retval = true; // written.
+    }
+	
+	nvs_close(my_handle);
+	xSemaphoreGive(NvMutex);	
+	return retval;
+}
+
+
 //void app_main()
 void ota_setup()
 {
@@ -213,62 +353,7 @@ void ota_setup()
     // Initialize NVS
     brownout_init();
    
-    esp_err_t err = nvs_flash_init();
-
-    if (err == ESP_ERR_NVS_NO_FREE_PAGES || err == ESP_ERR_NVS_NEW_VERSION_FOUND) 
-	{
-        // NVS partition was truncated and needs to be erased
-        // Retry nvs_flash_init
-        ESP_ERROR_CHECK(nvs_flash_erase());
-        err = nvs_flash_init();
-    }
-    ESP_ERROR_CHECK( err );
-
-    // Open
-    printf("\n");
-    printf("Opening Non-Volatile Storage (NVS) handle... ");
-
-    nvs_handle my_handle;
-    err = nvs_open("storage", NVS_READWRITE, &my_handle);
-	
-    if (err != ESP_OK) 
-	{
-        printf("Error (%s) opening NVS handle!\n", esp_err_to_name(err));
-    }
-	else 
-    {
-        printf("Done\n");
-
-        // Read
-        printf("Reading restart counter from NVS ... ");
-        err = nvs_get_i32(my_handle, "nResets", &nResets);
-		
-        switch (err) 
-		{
-            case ESP_OK:
-                printf("Done\n");
-                printf("Restart counter = %d\n", nResets);
-				err = nvs_set_i32(my_handle, "nResets", nResets+1);
-				Serial.printf("%s:%d err=%d\n", __FUNCTION__,__LINE__);
-                break;
-				
-            case ESP_ERR_NVS_NOT_FOUND:
-                printf("The Restart value is not initialized yet!\n");
-				
-				// initialize it.
-				err = nvs_set_i32(my_handle, "nResets", nResets);
-				Serial.printf("%s:%d err=%d\n", __FUNCTION__,__LINE__, err);
-				err = nvs_commit(my_handle);
-				
-                break;
-
-            default :
-                printf("Error (%s) reading!\n", esp_err_to_name(err));
-        }
-
-       // Close
-        nvs_close(my_handle);
-    }
+   	init_NVram();
 
   printf("\n");
 

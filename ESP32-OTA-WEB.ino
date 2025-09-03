@@ -485,6 +485,8 @@ void SendXML() {
   sprintf(xml_tbuf, "<UDTIME2>%+d</UDTIME2>\n", who.chargeTime);
   strcat(XML, xml_tbuf);
 
+  // design point 2
+  // this is where element tag 'REBOOTSx' is moved across the wire
   sprintf(xml_tbuf, "<REBOOTS1>%d</REBOOTS1>\n", 5);
   strcat(XML, xml_tbuf);
 

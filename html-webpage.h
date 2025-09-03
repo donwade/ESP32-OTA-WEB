@@ -1,3 +1,17 @@
+
+/*
+----the "big xml string below once started cannot use // or /* C formats
+
+    CAUTION: inserting classic // comment delimiter in xml def below MAY mess up
+
+    for block comments use 
+    <!--
+        blah blah blah
+        blah blah blah
+        blah blah blah
+    -->
+*/
+
 /*
 
 
@@ -55,8 +69,8 @@
 
 */
 
-// note R"KEYWORD( html page code )KEYWORD"; 
-// again I hate strings, so char is it and this method let's us write naturally
+ // note R"KEYWORD( html page code )KEYWORD"; 
+ // again I hate strings, so char is it and this method let's us write naturally
 
 const char PAGE_MAIN[] PROGMEM = R"=====(
 
@@ -273,20 +287,28 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
         </tr>
 
 
-// design point 3
-//   top level elements REBOOTS1 and REBOOTS2 are defined in 'design point1'
+<!--
+ // design point 3
+ //   top level elements REBOOTS1 and REBOOTS2 are defined in 'design point1'
 
-//   this is where the the sub elements z1 and z2 are positioned in the web page
-//   in this case the simple *TEXT*  'REBOOTS' is the leftmost item in the row
-//   z1 will appear in the second position (aka REBOOTS1)
-//   z2 will appear next to z1 in the last position (aka REBOOTS2)
+ //   this is where the the sub elements z1 and z2 are positioned in the web page
+ //   in this case the simple *TEXT*  'REBOOTS' is the leftmost item in the row
+ //   z1 will appear in the second position (aka REBOOTS1)
+ //   z2 will appear next to z1 in the last position (aka REBOOTS2)
 
-// the bodytext field "REBOOTS" is unrelated to the element names,
-// we just make it similar to make the association between the row and elements be tighter.
+ // the bodytext field "REBOOTS" is unrelated to the element names,
+ // we just make it similar to make the association between the row and elements be tighter.
+-->
+
         <tr>
-            <td><div class="bodytext">REBOOTS</div></td>      // where description will appear
-            <td><div class="tabledata" id = "z1"></div></td>  // where REBOOT1 will appear
-            <td><div class="tabledata" id = "z2"></div></td>  // where REBOOT2 will appear
+            <!-- where description will appear -->
+            <td><div class="bodytext">REBOOTS</div></td>
+
+            <!-- where REBOOT1 will appear -->
+            <td><div class="tabledata" id = "z1"></div></td>  
+
+            <!-- where REBOOT2 will appear -->
+            <td><div class="tabledata" id = "z2"></div></td>  
         </tr>
 
 
@@ -508,12 +530,14 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
 
 
           //-----------------------------------------------
-// design point 1
-//  1) define a name for a xml element (REBOOTS1)
-//  2) define sub element for POSITION names (z1)
-//  3) item 1 will be used for sending data across the wire.
-//  4) item 2 will be used internally in this webpage elsewhere for positioning
-//  5) make sure item 2 is carried thru to other weppage locations
+<!--
+ // design point 1
+ //  1) define a name for a xml element (REBOOTS1)
+ //  2) define sub element for POSITION names (z1)
+ //  3) item 1 will be used for sending data across the wire.
+ //  4) item 2 will be used internally in this webpage elsewhere for positioning
+ //  5) make sure item 2 is carried thru to other weppage locations
+-->
       
         xmldoc = xmlResponse.getElementsByTagName("REBOOTS1");
         message = xmldoc[0].firstChild.nodeValue;
