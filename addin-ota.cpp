@@ -8,6 +8,7 @@
 #include <ArduinoOTA.h>
 
 #include "addin-ota.h"
+#include "common.h"
 
 //#include "esp_brownout_detector.h" // Include the brownout detector header
 
@@ -47,7 +48,7 @@ int32_t nBrownouts;
 
 #include <rom/rtc.h>
 
-void print_reset_reason(RESET_REASON reason)
+uint8_t getResetReason(RESET_REASON reason)
 {
   switch (reason)
   {
@@ -98,6 +99,8 @@ void print_reset_reason(RESET_REASON reason)
     
     default : Serial.println ("NO_MEAN");
   }
+  
+  return reason;
 }
 
 
@@ -184,7 +187,7 @@ void brownout_init()
 
 		if (err == ESP_ERR_NVS_NOT_FOUND)
 		{
-			printf("\nVirgin :Set Brownout to 1 !\n");
+			TRACE("\nVirgin :Set Brownout to 1 !\n");
 			nBrownouts = 1;
 			err = nvs_set_i32(my_handle, "brownouts", nBrownouts);
 			err = nvs_commit(my_handle);
@@ -200,7 +203,7 @@ extern void web_setup(void);
 extern void web_loop(void);
 
 static bool bNVSinit = false;
-static SemaphoreHandle_t NvMutex = xSemaphoreCreateMutex();
+static SemaphoreHandle_t mMutexNV = xSemaphoreCreateMutex();
 
 //-------------------------------------------------------------
 
@@ -235,15 +238,17 @@ bool init_NVram(void)
 
 //-------------------------------------------------------------
 
-bool nvinit_uint32_t(char *name, int32_t value)
+bool nvCreateValue(char *name, int32_t value)
 {
-    nvs_handle my_handle;
+    nvs_handle hNVhandle;
 	esp_err_t err;
 	bool retval = false; //fail
-	
 
-	xSemaphoreTake(NvMutex, portMAX_DELAY);
-    err = nvs_open("storage", NVS_READWRITE, &my_handle);
+	if ( name == NULL ) return false;	
+	if ( strlen(name) > 20) name[19] = '\0';
+
+	xSemaphoreTake(mMutexNV, portMAX_DELAY);
+    err = nvs_open("storage", NVS_READWRITE, &hNVhandle);
 	
     if (err != ESP_OK) 
 	{
@@ -253,109 +258,146 @@ bool nvinit_uint32_t(char *name, int32_t value)
     }
 	else 
     {
-		err = nvs_set_i32(my_handle, name, value);
+		err = nvs_set_i32(hNVhandle, name, value);
 		if (!err)
 		{
-			err = nvs_commit(my_handle);
+			err = nvs_commit(hNVhandle);
 			if (err)
 				printf("%s:%d fail %s %s COMMIT!\n", 
 						__FUNCTION__, __LINE__, 
 								name, esp_err_to_name(err));
 			else
+			{
+				printf("%s:%d created %s with value 0!\n", 
+						__FUNCTION__, __LINE__, 
+						name, 0);
 				retval = true;
+			}
 		}
     }
 
-	nvs_close(my_handle);
-	xSemaphoreGive(NvMutex);	
+	nvs_close(hNVhandle);
+	xSemaphoreGive(mMutexNV);	
 	return retval;
 }
 
 //-------------------------------------------------------------
 
-bool nvget_uint32_t(char *name, int32_t *value)
+bool nvGetValue(char *name, int32_t *value)
 {
 
-    nvs_handle my_handle;
+	int32_t temp;
+	
+    nvs_handle hNVhandle;
 	bool retval = false;
 	esp_err_t err;
-	
-	xSemaphoreTake(NvMutex, portMAX_DELAY);
 
-    err = nvs_open("storage", NVS_READWRITE, &my_handle);
+	if ( name == NULL ) return false;	
+	if ( strlen(name) > 20) name[19] = '\0';
+	
+	xSemaphoreTake(mMutexNV, portMAX_DELAY);
+
+    err = nvs_open("storage", NVS_READWRITE, &hNVhandle);
 	
     if (err != ESP_OK) 
 	{
-        printf("%s:%d fail %s %s open NVS handle!\n", 
-				__FUNCTION__, __LINE__, 
-				name, esp_err_to_name(err));
-		retval = false;
+        TRACE("fail %s %s open NVS handle!\n", name, esp_err_to_name(err));
+		bool test = nvCreateValue(name, 0);
+		if (test == true)
+		{
+			retval = true;
+			*value = 0;
+		}
     }
 	else 
     {
-        err = nvs_get_i32(my_handle, name, value);
-		if (err == ESP_OK) retval = true;
+        err = nvs_get_i32(hNVhandle, name, &temp);
+		if (err == ESP_OK)
+		{
+			*value = temp;
+			TRACE("read %s=%d\n", name, temp);
+			retval = true;
+		}
 		
     }
 	
-	nvs_close(my_handle);
-	xSemaphoreGive(NvMutex);	
+	nvs_close(hNVhandle);
+	xSemaphoreGive(mMutexNV);	
 	
 	return retval;
 }
 
 //-------------------------------------------------------------
 
-bool nvset_uint32_t(char *name, int32_t value)
+bool nvSetValue(char *name, int32_t value)
 {
-    nvs_handle my_handle;
+    nvs_handle hNVhandle;
 	esp_err_t err;
 	bool retval = false; //fail
+
+	if ( name == NULL ) return false;	
+	if ( strlen(name) > 20) name[19] = '\0';
 	
-	xSemaphoreTake(NvMutex, portMAX_DELAY);
-    err = nvs_open("storage", NVS_READWRITE, &my_handle);
+	xSemaphoreTake(mMutexNV, portMAX_DELAY);
+    err = nvs_open("storage", NVS_READWRITE, &hNVhandle);
 	
     if (err != ESP_OK) 
 	{
-        printf("%s:%d fail %s %s opening NVS handle!\n", 
-				__FUNCTION__, __LINE__, 
-				name, esp_err_to_name(err));
+        TRACE("fail %s %s opening NVS handle!\n", name, esp_err_to_name(err));
     }
 	else 
     {
-        err = nvs_set_i32(my_handle, name, value);
+        err = nvs_set_i32(hNVhandle, name, value);
 
 		if (err)
-			printf("%s:%d fail %s %s WRITING!\n", 
-					__FUNCTION__, __LINE__, 
-					name, esp_err_to_name(err));
+			TRACE("fail %s %s WRITING!\n", name, esp_err_to_name(err));
 		else
+		{
+			TRACE("pass wrote value %d to %s\n", value, name);
 			retval = true; // written.
+		}
     }
 	
-	nvs_close(my_handle);
-	xSemaphoreGive(NvMutex);	
+	nvs_close(hNVhandle);
+	xSemaphoreGive(mMutexNV);	
 	return retval;
 }
 
+bool nvIncrementValue(char *name, int32_t *value)
+{
+	bool retval; 
+	int32_t x;
+	retval = nvGetValue(name, &x);
+	if (!retval) return false;
+	
+	x++;
+	
+	retval = nvSetValue(name, x);
+	if(value) *value = x;
+	return retval;
+}
 
 //void app_main()
 void ota_setup()
 {
-    Serial.begin(115200);
-
-    Serial.println("CPU0 reset reason: ");
-    print_reset_reason(rtc_get_reset_reason(0));
-
-    Serial.println("CPU1 reset reason: ");
-    print_reset_reason(rtc_get_reset_reason(1));
-
-    // Initialize NVS
-    brownout_init();
-   
-   	init_NVram();
-
-  printf("\n");
+  Serial.begin(115200);
+  int32_t val;
+  
+  
+  // Initialize NVS
+  brownout_init();
+  
+  init_NVram();
+  
+  val = getResetReason(rtc_get_reset_reason(0));
+  nvSetValue("CPU0_RESET", val);
+  nvGetValue("CPU0_RESET", &val);
+  TRACE("reset reason CPU 0 = %d\n", val);
+  
+  val = getResetReason(rtc_get_reset_reason(1));
+  nvSetValue("CPU1_RESET", val);
+  nvGetValue("CPU1_RESET", &val);
+  TRACE("reset reason CPU 1 = %d\n", val);
 
   WiFi.mode(WIFI_STA);
   WiFi.begin(ssid, password);
