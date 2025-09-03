@@ -106,8 +106,8 @@ void runPingTask(void *not_used);
 #endif
 
 // variables to store measure data and sensor states
-int		A2D_P32 = 0, 	A2D_P33 = 0;
-float 	A2D_P32_mV = 0, A2D_P33_mV = 0;
+int		A2D_P32 = 0;
+float 	A2D_P32_mV = 0;
 
 bool LED0 = false, SomeOutput = false;
 
@@ -294,16 +294,8 @@ void loop() {
 			  setToggleColors(_BLACK, _BLACK, 2);
 	}
 
-	if (p33 != A2D_P33)
-	{
-		p33 = A2D_P33;
-		Serial.printf("ssssssssssssss p33 = %\n", p33);
-	}
-
-
     // standard converion to go from 12 bit resolution reads to volts on an ESP
     A2D_P32_mV = A2D_P32 * 3300;
-    A2D_P33_mV = A2D_P33 * 3300;
 
     // standard converion to go from 12 bit resolution reads to volts on an ESP
     //A2D_P32_mV = A2D_P32 * 3300 / 4096;
@@ -442,8 +434,16 @@ void SendWebsite() {
 
 }
 
-// code to send the main web page
-// I avoid string data types at all cost hence all the char mainipulation code
+
+// THIS IS WHERE TAGS are SENT.
+// TAGS ARE DEFINED the "html file" in a function "response()";
+//
+// Tags in this project are things like BATVOLTAGE1, BATCURRENT2
+//
+// things like u1,b0, etc are not tags. They seem to be position placeholders
+// for phsyical position in a 'excel' formatted table. That has
+// nothing to do with tags.
+
 void SendXML() {
 
   Serial.printf("%s:%d %s\n", __FUNCTION__, __LINE__, format_date_time());
@@ -475,15 +475,22 @@ void SendXML() {
   sprintf(xml_tbuf, "<BATCURRENT2>%s</BATCURRENT2>\n", batman.chargeDirection ? "CHARGE" : "DISCHARGE");
   strcat(XML, xml_tbuf);
 
-  sprintf(xml_tbuf, "<UPTIME1>%d</UPTIME1>\n", uptime());
+  battmon who; 
+  getBatmon(&who);
+
+  sprintf(xml_tbuf, "<UDTIME1>%+d</UDTIME1>\n", -who.dischargeTime);
   strcat(XML, xml_tbuf);
 
+  sprintf(xml_tbuf, "<UDTIME2>%+d</UDTIME2>\n", who.chargeTime);
+  strcat(XML, xml_tbuf);
+
+/*
   sprintf(xml_tbuf, "<REBOOTS1>%d</REBOOTS1>\n", 5);
   strcat(XML, xml_tbuf);
 
   sprintf(xml_tbuf, "<REBOOTS2>%d</REBOOTS2>\n", 69);
   strcat(XML, xml_tbuf);
-
+*/
 
   // show led0 status
   if (LED0) {

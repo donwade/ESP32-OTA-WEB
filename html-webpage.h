@@ -244,51 +244,61 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
 
         <tr>
         <th colspan="1"><div class="heading">Pin</div></th>
-        <th colspan="1"><div class="heading">Bits</div></th>
+        <th colspan="1"><div class="heading">Value</div></th>
         <th colspan="1"><div class="heading">  mV</div></th>
         </tr>
 
         <tr>
-        <td><div class="bodytext">Radar pin 32</div></td>
-        <td><div class="tabledata" id = "r1"></div></td>
-        <td><div class="tabledata" id = "r2"></div></td>
+            <td><div class="bodytext">Radar pin 32</div></td>
+            <td><div class="tabledata" id = "r1"></div></td>
+            <td><div class="tabledata" id = "r2"></div></td>
         </tr>
 
         <tr>
-        <td><div class="bodytext">VOLTAGE</div></td>
-        <td><div class="tabledata" id = "b1"></div></td>
-        <td><div class="tabledata" id = "b2"></div></td>
+            <td><div class="bodytext">VOLTAGE</div></td>
+            <td><div class="tabledata" id = "b1"></div></td>
+            <td><div class="tabledata" id = "b2"></div></td>
         </tr>
 
         <tr>
-        <td><div class="bodytext">CURRENT</div></td>
-        <td><div class="tabledata" id = "c1"></div></td>
-        <td><div class="tabledata" id = "c2"></div></td>
+            <td><div class="bodytext">CURRENT</div></td>
+            <td><div class="tabledata" id = "c1"></div></td>
+            <td><div class="tabledata" id = "c2"></div></td>
         </tr>
 
         <tr>
-        <td><div class="bodytext">Digital switch</div></td>
-        <td><div class="tabledata" id = "switch"></div></td>
+            <td><div class="bodytext">UDTIME</div></td>
+            <td><div class="tabledata" id = "u1"></div></td>
+            <td><div class="tabledata" id = "u2"></div></td>
+        </tr>
+
+        <tr>
+            <td><div class="bodytext">Digital switch</div></td>
+            <td><div class="tabledata" id = "switch"></div></td>
         </tr>
       </table>
     </div>
+
     <br>
-    <div class="category">Sensor Controls</div>
-    <br>
+        <div class="category">Sensor Controls</div>
+    </br>
+
     <div class="bodytext">LED </div>
-    <button type="button" class = "btn" id = "btn0" onclick="ButtonPress0()">Toggle</button>
+        <button type="button" class = "btn" id = "btn0" onclick="ButtonPress0()">Toggle</button>
     </div>
+
     <br>
-    <div class="bodytext">Switch</div>
-    <button type="button" class = "btn" id = "btn1" onclick="ButtonPress1()">Toggle</button>
-    </div>
+        <div class="bodytext">Switch</div>
+            <button type="button" class = "btn" id = "btn1" onclick="ButtonPress1()">Toggle</button>
+        </div>
+    </br>
+
     <br>
-    <br>
-    <div class="bodytext">Fan Speed Control (RPM: <span id="fanrpm"></span>)</div>
-    <br>
-    <input type="range" class="fanrpmslider" min="0" max="255" value = "0" width = "0%" oninput="UpdateSlider(this.value)"/>
-    <br>
-    <br>
+        <div class="bodytext">Fan Speed Control (RPM: <span id="fanrpm"></span>)</div>
+        <br>
+            <input type="range" class="fanrpmslider" min="0" max="255" value = "0" width = "0%" oninput="UpdateSlider(this.value)"/>
+        </br>
+    </br>
   </main>
 
   <footer div class="foot" id = "temp" >ESP32 Web Page Creation and Data Update Demo</div></footer>
@@ -457,7 +467,7 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
 
           //-----------------------------------------------
           
-          xmldoc = xmlResponse.getElementsByTagName("UPTIME1");
+          xmldoc = xmlResponse.getElementsByTagName("UDTIME1");
           message = xmldoc[0].firstChild.nodeValue;
           document.getElementById("u1").innerHTML=message;
           document.getElementById("u1").style.width=(barwidth+"%");
@@ -466,6 +476,18 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
           //document.getElementById("u1").style.borderRadius="5px";
           
           
+          //-----------------------------------------------
+          
+          xmldoc = xmlResponse.getElementsByTagName("UDTIME2");
+          message = xmldoc[0].firstChild.nodeValue;
+          document.getElementById("u2").innerHTML=message;
+          document.getElementById("u2").style.width=(barwidth+"%");
+          // you can set color dynamically, maybe blue below a value, red above
+          document.getElementById("u2").style.backgroundColor=color;
+          //document.getElementById("u2").style.borderRadius="5px";
+          
+          
+
 
           //-----------------------------------------------
 
