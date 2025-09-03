@@ -102,7 +102,8 @@ void * savingMode(BUTTON_EVENT some_key)
 						battery.volt_mV/1000.,
 						battery.percent,
 						battery.current_mA,
-						battery.chargeDirection ? "CHG":"DIS");
+						battery.chargeDirection < 0 ? "DIS" : 
+						battery.chargeDirection > 0 ? "CHG" : "STP");
 
 
 	cprintf(_GREEN, 2, "host= %s", LOCAL_HOSTNAME);

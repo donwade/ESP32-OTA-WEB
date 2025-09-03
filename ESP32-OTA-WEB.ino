@@ -472,7 +472,8 @@ void SendXML() {
   sprintf(xml_tbuf, "<BATCURRENT1>%d</BATCURRENT1>\n", batman.current_mA);
   strcat(XML, xml_tbuf);
 
-  sprintf(xml_tbuf, "<BATCURRENT2>%s</BATCURRENT2>\n", batman.chargeDirection ? "CHARGE" : "DISCHARGE");
+  sprintf(xml_tbuf, "<BATCURRENT2>%s</BATCURRENT2>\n", batman.chargeDirection < 0 ? "DISCHARGE" :
+  													   batman.chargeDirection > 0 ? "CHARGE" : "STOPPED");
   strcat(XML, xml_tbuf);
 
   battmon who; 
