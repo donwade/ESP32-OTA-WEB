@@ -6,5 +6,9 @@ extern bool nvSetValue(char *name, int32_t value);
 extern bool nvIncrementValue(char *name, int32_t *value);
 extern bool nvErase(void);
 
+extern bool nvCreateValue(char *name, int32_t value, bool bfast = false);
+extern bool nvGetSetGtValue(char *name, int32_t *value);
+extern bool nvGetSetLtValue(char *name, int32_t *value);
+
 
 

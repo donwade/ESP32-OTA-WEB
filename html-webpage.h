@@ -275,13 +275,20 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
         </tr>
 
         <tr>
+            <td><div class="bodytext">BAT HI/LO</div></td>
+            <td><div class="tabledata" id = "j1"></div></td>
+            <td><div class="tabledata" id = "j2"></div></td>
+        </tr>
+
+
+        <tr>
             <td><div class="bodytext">CURRENT</div></td>
             <td><div class="tabledata" id = "c1"></div></td>
             <td><div class="tabledata" id = "c2"></div></td>
         </tr>
 
         <tr>
-            <td><div class="bodytext">UDTIME</div></td>
+            <td><div class="bodytext">UP/DN TIME</div></td>
             <td><div class="tabledata" id = "u1"></div></td>
             <td><div class="tabledata" id = "u2"></div></td>
         </tr>
@@ -302,7 +309,7 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
 
         <tr>
             <!-- where description will appear -->
-            <td><div class="bodytext">REBOOTS</div></td>
+            <td><div class="bodytext"># REBOOTS/BRWN OUTS</div></td>
 
             <!-- where REBOOT1 will appear -->
             <td><div class="tabledata" id = "z1"></div></td>  
@@ -484,6 +491,25 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
         // you can set color dynamically, maybe blue below a value, red above
         document.getElementById("b2").style.backgroundColor=color;
         //document.getElementById("b2").style.borderRadius="5px";
+        //-----------------------------------------------
+
+        xmldoc = xmlResponse.getElementsByTagName("BATT_HI");
+        message = xmldoc[0].firstChild.nodeValue;
+        document.getElementById("j1").innerHTML=message;
+        document.getElementById("j1").style.width=(barwidth+"%");
+        // you can set color dynamically, maybe blue below a value, red above
+        document.getElementById("j1").style.backgroundColor=color;
+        //document.getElementById("j1").style.borderRadius="5px";
+
+
+        xmldoc = xmlResponse.getElementsByTagName("BATT_LO");
+        message = xmldoc[0].firstChild.nodeValue;
+        document.getElementById("j2").innerHTML=message;
+        document.getElementById("j2").style.width=(barwidth+"%");
+        // you can set color dynamically, maybe blue below a value, red above
+        document.getElementById("j2").style.backgroundColor=color;
+        //document.getElementById("j2").style.borderRadius="5px";
+
 
         //-----------------------------------------------
 

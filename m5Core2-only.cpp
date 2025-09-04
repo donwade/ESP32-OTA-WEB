@@ -2,6 +2,7 @@
 #include "m5Core2-only.h"
 #include "viewController.h"
 #include "RTC.h"
+#include "addin-ota.h"
 
 static uint8_t vert = 0;
 
@@ -62,17 +63,27 @@ void setBrightness(uint8_t val)
 #include <Fonts/FreeMonoBoldOblique12pt7b.h>
 #include <Fonts/FreeMono12pt7b.h>
 
+int32_t fMAX_BAT_mV = 1; 
+int32_t fMIN_BAT_mV = 9999;
+
 //--------------------------------------------------
 bool getBatteryStats (batt_stats *reply)
 {
-	const float fMAX_BAT_mV = 4200; 
-	const float fMIN_BAT_mV = 3100;
-	const float fRange = fMAX_BAT_mV - fMIN_BAT_mV;
+	int32_t temp;
+	
+	const int32_t fRange = fMAX_BAT_mV - fMIN_BAT_mV;
 	
 	bool isCharging = M5.Power.isCharging();
 
-	float volt_mV = M5.Power.getBatteryVoltage();
-	int percent = (volt_mV - fMIN_BAT_mV) * 100. / fRange;
+	int32_t volt_mV = M5.Power.getBatteryVoltage();
+
+	fMAX_BAT_mV = volt_mV; 
+	fMIN_BAT_mV = volt_mV;
+	nvGetSetGtValue("BATT_HI", &fMAX_BAT_mV);
+	nvGetSetLtValue("BATT_LO", &fMIN_BAT_mV);
+
+	
+	int percent = (float)(volt_mV - fMIN_BAT_mV) * 100. / (float)fRange;
 
 	int current_mA = M5.Power.getBatteryCurrent();
 

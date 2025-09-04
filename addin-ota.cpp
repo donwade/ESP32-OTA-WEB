@@ -240,7 +240,7 @@ bool nvErase(void)
 	esp_restart();
 }
 
-bool nvCreateValue(char *name, int32_t value)
+bool nvCreateValue(char *name, int32_t value, bool bfast)
 {
     nvs_handle hNVhandle;
 	esp_err_t err;
@@ -249,7 +249,8 @@ bool nvCreateValue(char *name, int32_t value)
 	if ( name == NULL ) return false;	
 	if ( strlen(name) > 20) name[19] = '\0';
 
-	xSemaphoreTake(mMutexNV, portMAX_DELAY);
+	if (!bfast) xSemaphoreTake(mMutexNV, portMAX_DELAY);
+	
     err = nvs_open("storage", NVS_READWRITE, &hNVhandle);
 	
     if (err != ESP_OK) 
@@ -273,7 +274,8 @@ bool nvCreateValue(char *name, int32_t value)
     }
 
 	nvs_close(hNVhandle);
-	xSemaphoreGive(mMutexNV);	
+	
+	if (!bfast) xSemaphoreGive(mMutexNV);	
 	return retval;
 }
 
@@ -298,7 +300,7 @@ bool nvGetValue(char *name, int32_t *value)
     if (err != ESP_OK) 
 	{
         TRACE("fail %s %s open NVS handle!\n", name, esp_err_to_name(err));
-		bool test = nvCreateValue(name, 0);
+		bool test = nvCreateValue(name, 0, true);
 		if (test == true)
 		{
 			retval = true;
@@ -316,7 +318,10 @@ bool nvGetValue(char *name, int32_t *value)
 			TRACE("read %s=%d\n", name, temp);
 			retval = true;
 		}
-		
+		else
+		{
+			nvCreateValue(name, *value, true); 
+		}
     }
 	
 	nvs_close(hNVhandle);
@@ -359,6 +364,41 @@ bool nvSetValue(char *name, int32_t value)
 	nvs_close(hNVhandle);
 	xSemaphoreGive(mMutexNV);	
 	return retval;
+}
+
+
+//-------------------------------------------------------------
+
+bool nvGetSetLtValue(char *name, int32_t *value)
+{
+
+	int32_t temp = *value;  // use value is keynot exist
+	bool ok;
+	
+	ok = nvGetValue(name, &temp);
+	if (*value < temp)
+		ok = nvSetValue(name, *value);
+	else
+		*value = temp; // get had lesser value
+	
+	return ok;
+}
+
+//-------------------------------------------------------------
+
+bool nvGetSetGtValue(char *name, int32_t *value)
+{
+
+	int32_t temp = *value;  // use value is keynot exist
+	bool ok;
+	
+	ok = nvGetValue(name, &temp);
+	if ( *value > temp)
+		ok = nvSetValue(name, *value);
+	else
+		*value = temp; // get had greater value
+	
+	return ok;
 }
 
 bool nvIncrementValue(char *name, int32_t *value)

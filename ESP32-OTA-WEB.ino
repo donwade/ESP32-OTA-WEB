@@ -453,6 +453,16 @@ void SendXML() {
   sprintf(xml_tbuf, "<BATVOLTAGE2>%d%% </BATVOLTAGE2>\n", batman.percent);
   strcat(XML, xml_tbuf);
 
+  // send battery voltage
+  int32_t hilo;
+  nvGetValue("BATT_HI", &hilo);
+  sprintf(xml_tbuf, "<BATT_HI>%5.2fv</BATT_HI>\n", (float)hilo/1000.);
+  strcat(XML, xml_tbuf);
+
+  nvGetValue("BATT_LO", &hilo);
+  sprintf(xml_tbuf, "<BATT_LO>%5.2fv</BATT_LO>\n", (float)hilo/1000.);
+  strcat(XML, xml_tbuf);
+
 
   sprintf(xml_tbuf, "<BATCURRENT1>%d</BATCURRENT1>\n", batman.current_mA);
   strcat(XML, xml_tbuf);
