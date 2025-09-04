@@ -225,6 +225,21 @@ bool init_NVram(void)
 
 //-------------------------------------------------------------
 
+bool nvErase(void)
+{
+	esp_err_t err;
+	err = nvs_flash_erase();
+	TRACE("nvs_flash_erase ret = %d\n", err);
+	
+	err = nvs_flash_init();
+	TRACE("nvs_flash_init retval = %d\n", err);
+	
+	for (int i = 0; i < 10; i++)
+	printf("reseting ....\n");
+
+	esp_restart();
+}
+
 bool nvCreateValue(char *name, int32_t value)
 {
     nvs_handle hNVhandle;

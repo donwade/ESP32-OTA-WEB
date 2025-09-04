@@ -71,6 +71,7 @@
 #include "RTC.h"
 #include "batmon.h"
 #include "addin-ota.h"
+#include "common.h"
 
 void runDisplayTask(void *not_used);
 void runPingTask(void *not_used);
@@ -229,7 +230,7 @@ void setup() {
   
   server.on("/UPDATE_SLIDER", UpdateSlider);
   server.on("/BUTTON_0", UserPressLEDbutton);
-  server.on("/BUTTON_1", UserPressSwitchButton);
+  server.on("/BUTTON_1", UserPressClearNV);
 
   // finally begin the server
   server.begin();
@@ -310,6 +311,7 @@ void loop() {
   	
 }
 
+//-----------------------------------------------------
 
 // function managed by an .on method to handle slider actions on the web page
 
@@ -398,34 +400,12 @@ void UserPressLEDbutton()
 
 }
 
+
 // same notion for processing button_1
-void UserPressSwitchButton() {
-
-  // just a simple way to toggle a THINGY on/off. Much better ways to do this
-  
-  Serial.println("Button 1 press");
-  SomeOutput = !SomeOutput;
-
-  digitalWrite(PIN_ARBITRARY_OUTPUT, SomeOutput);
-  Serial.print("Button 1 "); Serial.println(LED0);
-  
-  // regardless if you want to send stuff back to client or not
-  // you must have the send line--as it keeps the page running
-  // if you don't want feedback from the MCU--or send all data via XML use this method
-  // sending feeback
-
-  server.send(200, "text/plain", ""); //Send web page
-
-  // if you want to send feed back immediataly
-  // note you must have proper code in the java script to read this data stream
-  /*
-    if (some_process) {
-    server.send(200, "text/plain", "SUCCESS"); //Send web page
-    }
-    else {
-    server.send(200, "text/plain", "FAIL"); //Send web page
-    }
-  */
+void UserPressClearNV() 
+{
+  nvErase();
+  // not coming back. Going to do a reset
 }
 
 

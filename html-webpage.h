@@ -328,7 +328,7 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
     </div>
 
     <br>
-        <div class="bodytext">Switch</div>
+        <div class="bodytext">Reset NV</div>
             <button type="button" class = "btn" id = "btn1" onclick="ButtonPress1()">Toggle</button>
         </div>
     </br>
