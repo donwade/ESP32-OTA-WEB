@@ -41,7 +41,7 @@ const char *password = MY_SSID_PASSWORD;
 #define CONFIG_BROWNOUT_DET_LVL_SEL_5 1
 
 int32_t nResets;
-int32_t nBrownouts;
+int32_t nBrownoutCtr;
 
 //--------------------------------------------------------------
 //https://stackoverflow.com/questions/73200166/exception-handling-for-brownout-detector-was-trigerred
@@ -117,15 +117,15 @@ uint8_t getResetReason(RESET_REASON reason)
     } 
 	else
 	{
-        err = nvs_get_i32(my_handle, "brownouts", &nBrownouts);
+        err = nvs_get_i32(my_handle, "BROWNOUT_CTR", &nBrownoutCtr);
 
 		if (err == ESP_ERR_NVS_NOT_FOUND)
 		{
 			printf("The brownout value is not initialized yet!\n");
-			nBrownouts = 1;
+			nBrownoutCtr = 1;
 		}
 		
-        err = nvs_set_i32(my_handle, "brownouts", nBrownouts);
+        err = nvs_set_i32(my_handle, "BROWNOUT_CTR", nBrownoutCtr);
         err = nvs_commit(my_handle);
 
         nvs_close(my_handle);
@@ -174,28 +174,15 @@ void brownout_init()
     REG_SET_BIT( RTC_CNTL_INT_ENA_REG, 
 				 RTC_CNTL_BROWN_OUT_INT_ENA_M);
 
-	nvs_handle my_handle;
-	
-	esp_err_t err = nvs_open("storage", NVS_READWRITE, &my_handle);
-
-	if (err != ESP_OK) {
-		ets_printf("Error (%s) opening NVS handle!\n", esp_err_to_name(err));
-	} 
-	else
+	bool pass = nvGetValue("BROWNOUT_CTR", &nBrownoutCtr);
+	if (!pass)
 	{
-		err = nvs_get_i32(my_handle, "brownouts", &nBrownouts);
-
-		if (err == ESP_ERR_NVS_NOT_FOUND)
-		{
-			TRACE("\nVirgin :Set Brownout to 1 !\n");
-			nBrownouts = 1;
-			err = nvs_set_i32(my_handle, "brownouts", nBrownouts);
-			err = nvs_commit(my_handle);
-		}
-		
-		Serial.printf("%s:%d brownout value is %d\n", __FUNCTION__, __LINE__, nBrownouts);
-		nvs_close(my_handle);
+		TRACE("\nVirgin :Set Brownout to 1 !\n");
+		nBrownoutCtr = 1;
+		nvSetValue("BROWNOUT_CTR", nBrownoutCtr);
 	}
+	
+	TRACE("brownout value is %d\n", nBrownoutCtr);
 }
 
 
@@ -252,9 +239,7 @@ bool nvCreateValue(char *name, int32_t value)
 	
     if (err != ESP_OK) 
 	{
-        printf("%s:%d fail %s %s opening NVS handle!\n", 
-				__FUNCTION__, __LINE__, 
-				name, esp_err_to_name(err));
+        TRACE("fail %s %s opening NVS handle!\n", name, esp_err_to_name(err));
     }
 	else 
     {
@@ -263,14 +248,10 @@ bool nvCreateValue(char *name, int32_t value)
 		{
 			err = nvs_commit(hNVhandle);
 			if (err)
-				printf("%s:%d fail %s %s COMMIT!\n", 
-						__FUNCTION__, __LINE__, 
-								name, esp_err_to_name(err));
+				TRACE("fail %s %s COMMIT!\n", name, esp_err_to_name(err));
 			else
 			{
-				printf("%s:%d created %s with value 0!\n", 
-						__FUNCTION__, __LINE__, 
-						name, 0);
+				TRACE("created %s with value 0!\n", name, 0);
 				retval = true;
 			}
 		}
@@ -308,6 +289,8 @@ bool nvGetValue(char *name, int32_t *value)
 			retval = true;
 			*value = 0;
 		}
+		else
+			TRACE("failed to create value %s\n", name);
     }
 	else 
     {
@@ -388,7 +371,10 @@ void ota_setup()
   brownout_init();
   
   init_NVram();
-  
+
+  nvIncrementValue("RESET_CTR", &val);
+  TRACE("reset count = %d\n", val);
+
   val = getResetReason(rtc_get_reset_reason(0));
   nvSetValue("CPU0_RESET", val);
   nvGetValue("CPU0_RESET", &val);

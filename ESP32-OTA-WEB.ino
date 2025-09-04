@@ -70,6 +70,7 @@
 #include "esp_debug_helpers.h"
 #include "RTC.h"
 #include "batmon.h"
+#include "addin-ota.h"
 
 void runDisplayTask(void *not_used);
 void runPingTask(void *not_used);
@@ -478,7 +479,8 @@ void SendXML() {
 
   battmon who; 
   getBatmon(&who);
-
+  int32_t val;
+  
   sprintf(xml_tbuf, "<UDTIME1>%+d</UDTIME1>\n", -who.dischargeTime);
   strcat(XML, xml_tbuf);
 
@@ -487,10 +489,12 @@ void SendXML() {
 
   // design point 2
   // this is where element tag 'REBOOTSx' is moved across the wire
-  sprintf(xml_tbuf, "<REBOOTS1>%d</REBOOTS1>\n", 5);
+  nvGetValue("RESET_CTR", &val);
+  sprintf(xml_tbuf, "<REBOOTS1>%d</REBOOTS1>\n", val );
   strcat(XML, xml_tbuf);
 
-  sprintf(xml_tbuf, "<REBOOTS2>%d</REBOOTS2>\n", 69);
+  nvGetValue("BROWNOUT_CTR", &val);
+  sprintf(xml_tbuf, "<REBOOTS2>%d</REBOOTS2>\n", val);
   strcat(XML, xml_tbuf);
 
   // show led0 status
