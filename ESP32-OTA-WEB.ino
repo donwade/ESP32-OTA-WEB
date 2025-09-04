@@ -249,13 +249,14 @@ void setup() {
                      4                //UBaseType_t uxPriority)
                      );
 
-
+/*
 spawnTaskAndDogV2( runPingTask, 	//(void * not_used)TaskFunction_t pvTaskCode,
 				   "PingTask",  	//const char * const pcName,
 				   1024 * 8,		//const uint32_t usStackDepth,
 				   NULL,			//void * const pvParameters,
 				   4				//UBaseType_t uxPriority)
 				   );
+*/
 
 #if 1
 spawnTaskAndDogV2( runBatmonTask, 	//(void * not_used)TaskFunction_t pvTaskCode,
@@ -270,7 +271,6 @@ spawnTaskAndDogV2( runBatmonTask, 	//(void * not_used)TaskFunction_t pvTaskCode,
 void loop() {
 
   static int8_t p32 = -1;
-  static int8_t p33 = -1;
   
   ota_loop();
   
@@ -446,8 +446,16 @@ void SendXML() {
   batt_stats batman;
   getBatteryStats (&batman);
 
+  // send USB voltage
+  sprintf(xml_tbuf, "<USBVOLTAGE1>%5.2fv</USBVOLTAGE1>\n", (float)batman.usbMax_mV/1000.);
+  strcat(XML, xml_tbuf);
+
+  sprintf(xml_tbuf, "<USBVOLTAGE2>%5.2fv</USBVOLTAGE2>\n", (float)batman.usbMin_mV/1000.);
+  strcat(XML, xml_tbuf);
+
+
   // send battery voltage
-  sprintf(xml_tbuf, "<BATVOLTAGE1>%5.2fv</BATVOLTAGE1>\n", batman.volt_mV/1000.);
+  sprintf(xml_tbuf, "<BATVOLTAGE1>%5.2fv</BATVOLTAGE1>\n", batman.batt_mV/1000.);
   strcat(XML, xml_tbuf);
 
   sprintf(xml_tbuf, "<BATVOLTAGE2>%d%% </BATVOLTAGE2>\n", batman.percent);

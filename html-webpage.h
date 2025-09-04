@@ -269,7 +269,14 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
         </tr>
 
         <tr>
-            <td><div class="bodytext">VOLTAGE</div></td>
+            <td><div class="bodytext">USB VOLTAGE</div></td>
+            <td><div class="tabledata" id = "g1"></div></td>
+            <td><div class="tabledata" id = "g2"></div></td>
+        </tr>
+
+
+        <tr>
+            <td><div class="bodytext">BAT VOLTAGE</div></td>
             <td><div class="tabledata" id = "b1"></div></td>
             <td><div class="tabledata" id = "b2"></div></td>
         </tr>
@@ -282,7 +289,7 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
 
 
         <tr>
-            <td><div class="bodytext">CURRENT</div></td>
+            <td><div class="bodytext">BAT CURRENT</div></td>
             <td><div class="tabledata" id = "c1"></div></td>
             <td><div class="tabledata" id = "c2"></div></td>
         </tr>
@@ -471,6 +478,25 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
         // you can set color dynamically, maybe blue below a value, red above
         document.getElementById("r2").style.backgroundColor=color;
         //document.getElementById("r2").style.borderRadius="5px";
+
+        //-----------------------------------------------
+
+        xmldoc = xmlResponse.getElementsByTagName("USBVOLTAGE1");
+        message = xmldoc[0].firstChild.nodeValue;
+        document.getElementById("g1").innerHTML=message;
+        document.getElementById("g1").style.width=(barwidth+"%");
+        // you can set color dynamically, maybe blue below a value, red above
+        document.getElementById("g1").style.backgroundColor=color;
+        //document.getElementById("g1").style.borderRadius="5px";
+
+
+        xmldoc = xmlResponse.getElementsByTagName("USBVOLTAGE2");
+        message = xmldoc[0].firstChild.nodeValue;
+        document.getElementById("g2").innerHTML=message;
+        document.getElementById("g2").style.width=(barwidth+"%");
+        // you can set color dynamically, maybe blue below a value, red above
+        document.getElementById("g2").style.backgroundColor=color;
+        //document.getElementById("g2").style.borderRadius="5px";
 
         //-----------------------------------------------
 

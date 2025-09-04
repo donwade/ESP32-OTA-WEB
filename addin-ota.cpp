@@ -315,7 +315,7 @@ bool nvGetValue(char *name, int32_t *value)
 		if (err == ESP_OK)
 		{
 			*value = temp;
-			TRACE("read %s=%d\n", name, temp);
+			//TRACE("read %s=%d\n", name, temp);
 			retval = true;
 		}
 		else

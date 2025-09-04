@@ -63,27 +63,36 @@ void setBrightness(uint8_t val)
 #include <Fonts/FreeMonoBoldOblique12pt7b.h>
 #include <Fonts/FreeMono12pt7b.h>
 
-int32_t fMAX_BAT_mV = 1; 
-int32_t fMIN_BAT_mV = 9999;
+int32_t iMAX_BAT_mV = 4000;	// real = 4.19 
+int32_t iMIN_BAT_mV = 3200;	// real = 3.13
+
+int32_t iMAX_USB_mV = 1; 
+int32_t iMIN_USB_mV = 9999;
 
 //--------------------------------------------------
 bool getBatteryStats (batt_stats *reply)
 {
 	int32_t temp;
 	
-	const int32_t fRange = fMAX_BAT_mV - fMIN_BAT_mV;
+	const int32_t fRange = iMAX_BAT_mV - iMIN_BAT_mV;
 	
 	bool isCharging = M5.Power.isCharging();
 
 	int32_t volt_mV = M5.Power.getBatteryVoltage();
 
-	fMAX_BAT_mV = volt_mV; 
-	fMIN_BAT_mV = volt_mV;
-	nvGetSetGtValue("BATT_HI", &fMAX_BAT_mV);
-	nvGetSetLtValue("BATT_LO", &fMIN_BAT_mV);
+	int32_t usb_mV =  M5.Power.getVBUSVoltage();
+	
+	iMAX_USB_mV = max(iMAX_USB_mV, usb_mV);
+	iMIN_USB_mV = min(iMIN_USB_mV, usb_mV);
+
+	// retrieve bat stats from NV
+	iMAX_BAT_mV = volt_mV; 
+	iMIN_BAT_mV = volt_mV;
+	nvGetSetGtValue("BATT_HI", &iMAX_BAT_mV);
+	nvGetSetLtValue("BATT_LO", &iMIN_BAT_mV);
 
 	
-	int percent = (float)(volt_mV - fMIN_BAT_mV) * 100. / (float)fRange;
+	int percent = (float)(volt_mV - iMIN_BAT_mV) * 100. / (float)fRange;
 
 	int current_mA = M5.Power.getBatteryCurrent();
 
@@ -92,7 +101,11 @@ bool getBatteryStats (batt_stats *reply)
 	
 	reply->current_mA = current_mA;  
 	reply->percent = percent;
-	reply->volt_mV = volt_mV;
+	reply->batt_mV = volt_mV;
+	
+	reply->usb_mV = usb_mV;
+	reply->usbMin_mV = iMIN_USB_mV;
+	reply->usbMax_mV = iMAX_USB_mV;
 	
 	return true;
 }

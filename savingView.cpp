@@ -99,7 +99,7 @@ void * savingMode(BUTTON_EVENT some_key)
 	getBatteryStats (&battery);
 
 	cprintf(_YELLOW, 1, "%3.1fv %3d%% %4dmA %s", 
-						battery.volt_mV/1000.,
+						battery.batt_mV/1000.,
 						battery.percent,
 						battery.current_mA,
 						battery.chargeDirection < 0 ? "DIS" : 

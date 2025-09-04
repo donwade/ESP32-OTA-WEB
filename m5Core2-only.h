@@ -23,7 +23,10 @@ extern uint32_t uptime(void);
 typedef struct 
 {
 	int8_t chargeDirection;
-	float volt_mV;
+	float batt_mV;
+    int usb_mV;
+    int usbMin_mV;
+    int usbMax_mV;
 	int percent;
 	int current_mA;
 }batt_stats;
