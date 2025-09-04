@@ -114,8 +114,8 @@ bool LED0 = false, SomeOutput = false;
 
 uint32_t lastSensorTime = 0;
 
-int FanSpeed = 0;
-int FanRPM = 0;
+int sliderPosition = 0;
+int textToWeb = 0;
 
 // the XML array size needs to be bigger that your maximum expected size. 2048 is way too big for this example
 char XML[2048];
@@ -166,7 +166,7 @@ void setup() {
   /* old ESP compiler
   ledcSetup(0, 10000, 8);
   ledcAttachPin(PIN_FAN_PMW, 0);
-  ledcWrite(0, FanSpeed);
+  ledcWrite(0, sliderPosition);
   */
 
   // if your web page or XML are large, you may not get a call back from the web page
@@ -321,17 +321,18 @@ void UpdateSlider() {
   String t_state = server.arg("VALUE");
 
   // conver the string sent from the web page to an int
-  FanSpeed = t_state.toInt();
+  sliderPosition = t_state.toInt();
   
-  Serial.print("UpdateSlider"); Serial.println(FanSpeed);
+  Serial.print("UpdateSlider"); Serial.println(sliderPosition);
   // now set the PWM duty cycle
   
   // old ESP compiler
-  // ledcWrite(0, FanSpeed);
+  // ledcWrite(0, sliderPosition);
 
   // latest ESP compiler
-  analogWrite(PIN_FAN_PMW, FanSpeed); // config for PMW out mode
+  //analogWrite(PIN_FAN_PMW, sliderPosition); // config for PMW out mode
 
+  setBrightness(sliderPosition);
 
   // YOU MUST SEND SOMETHING BACK TO THE WEB PAGE--BASICALLY TO KEEP IT LIVE
 
@@ -348,10 +349,13 @@ void UpdateSlider() {
 
   // slider goes from 0 - 255, rpm goes from 0 - 2400
   
-  FanRPM = map(FanSpeed, 0, 255, 0, 2400);
+  textToWeb = map(sliderPosition, 0, 255, 0, 255);
+  
+  // disable but keep old pwm mapping
+  //textToWeb = map(sliderPosition, 0, 255, 0, 2400);
   
   strcpy(xml_tbuf, "");
-  sprintf(xml_tbuf, "%d", FanRPM);
+  sprintf(xml_tbuf, "%d", textToWeb);
   
   // now send rpm  back to webpage for display
   server.send(200, "text/plain", xml_tbuf); //Send web page

@@ -28,7 +28,8 @@ typedef struct
 	int current_mA;
 }batt_stats;
 
-bool getBatteryStats (batt_stats *reply); 
+extern bool getBatteryStats (batt_stats *reply); 
+extern void setBrightness(uint8_t val);
 
 
 

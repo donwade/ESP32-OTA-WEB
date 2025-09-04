@@ -112,7 +112,7 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
       transition: all 200ms ease-in-out;
       background-color: #000000;
     }
-    .fanrpmslider {
+    .backlightSlider {
       width: 30%;
       height: 55px;
       outline: none;
@@ -334,9 +334,9 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
     </br>
 
     <br>
-        <div class="bodytext">Fan Speed Control (RPM: <span id="fanrpm"></span>)</div>
+        <div class="bodytext">Backlight Brightness<span id="brightSlide"></span>)</div>
         <br>
-            <input type="range" class="fanrpmslider" min="0" max="255" value = "0" width = "0%" oninput="UpdateSlider(this.value)"/>
+            <input type="range" class="backlightSlider" min="0" max="255" value = "0" width = "0%" oninput="UpdateSlider(this.value)"/>
         </br>
     </br>
   </main>
@@ -412,7 +412,7 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
       xhttp.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200) {
           // update the web based on reply from  ESP
-          document.getElementById("fanrpm").innerHTML=this.responseText;
+          document.getElementById("brightSlide").innerHTML=this.responseText;
         }
       }
       // this syntax is really weird the ? is a delimiter

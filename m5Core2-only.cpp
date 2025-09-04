@@ -51,6 +51,11 @@ void lclear(void)
 {
 	M5.Lcd.clear();
 }
+
+void setBrightness(uint8_t val)
+{
+	M5.Lcd.setBrightness(val);
+}
 //--------------------------------------------------
 #include <Adafruit_GFX.h>    // Core graphics library
 // below must follow above
