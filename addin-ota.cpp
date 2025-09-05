@@ -421,6 +421,7 @@ bool nvIncrementValue(char *name, int32_t *value)
 //void app_main()
 void ota_setup()
 {
+
   Serial.begin(115200);
   int32_t val;
   

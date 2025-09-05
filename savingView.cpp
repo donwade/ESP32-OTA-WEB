@@ -96,10 +96,11 @@ void * savingMode(BUTTON_EVENT some_key)
 {
 	IPAddress ip;
 	batt_stats battery;
+	uint8_t lineno = 1;
 	
 	getBatteryStats (&battery);
 
-	cprintf(_YELLOW, 1, "%3.1fv %3d%% %4dmA %s", 
+	cprintf(_YELLOW, lineno++, "%3.1fv %3d%% %4dmA %s", 
 						battery.batt_mV/1000.,
 						battery.percent,
 						battery.current_mA,
@@ -107,33 +108,37 @@ void * savingMode(BUTTON_EVENT some_key)
 						battery.chargeDirection > 0 ? "CHG" : "STP");
 
 
-	cprintf(_GREEN, 2, "host= %s", LOCAL_HOSTNAME);
-		
+	cprintf(_GREEN, lineno++, "host= %s", LOCAL_HOSTNAME);
+
+/*		
 	ip = WiFi.localIP();
 	uint32_t x = (uint32_t) ip;
 	
-	cprintf(_GREEN, 3, "ip = %d:%d:%d:%d", 
+	cprintf(_GREEN, lineno++, "ip = %d:%d:%d:%d", 
 		 x     & 0xFF,
 		(x>>8 )&0xFF, 
 		(x>>16)&0xFF, 
 		(x>>24)&0xFF);
+*/
 	
 	// print the received signal strength:
-	cprintf(_GREEN, 4, "%d dBm", WiFi.RSSI());
-
-	//cprintf(_CYAN, 6, "up = %d S", uptime());
+	cprintf(_GREEN, lineno++, "%d dBm", WiFi.RSSI());
+	//cprintf(_CYAN, lineno++, "up = %d S", uptime());
 	
 	battmon data;  
 	getBatmon(&data);
 	
-	//cprintf(_CYAN, 5, "up=%d dn=%d", data.chargeTime, data.dischargeTime);
+	//cprintf(_CYAN, lineno++, "up=%d dn=%d", data.chargeTime, data.dischargeTime);
 
 	char chg[80];
 	char dis[80];
+	char hld[80];
 	secondsToHMS(data.chargeTime, chg);
     secondsToHMS(data.dischargeTime, dis);
-	cprintf(_CYAN, 5, "up=%s", chg);
-	cprintf(_CYAN, 6, "dn=%s", dis);
+    secondsToHMS(data.holdchargeTime, hld);
+	cprintf(_CYAN, lineno++, "up=%s", chg);
+	cprintf(_CYAN, lineno++, "dn=%s", dis);
+	cprintf(_CYAN, lineno++, "hd=%s", hld);
 	
 	// all display updates done ... just keys left
 	if (some_key == DISPLAY_REFRESH) return (void*) savingMode;

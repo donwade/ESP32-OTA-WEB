@@ -247,19 +247,21 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
       <div style="border-radius: 10px !important;">
       <table style="width:50%">
         <colgroup>
-         <col span="1" style="background-color:rgb(230,230,230); width: 20%; color:#000000 ;">
-         <col span="1" style="background-color:rgb(200,200,200); width: 15%; color:#000000 ;">
-         <col span="1" style="background-color:rgb(180,180,180); width: 15%; color:#000000 ;">
+         <col span="1" style="background-color:rgb(230,230,230); width: 25%; color:#000000 ;">
+         <col span="1" style="background-color:rgb(180,180,180); width: 25%; color:#000000 ;">
+         <col span="1" style="background-color:rgb(180,180,180); width: 25%; color:#000000 ;">
+         <col span="1" style="background-color:rgb(180,180,180); width: 25%; color:#000000 ;">
         </colgroup>
 
         <col span="2"style="background-color:rgb(0,0,0); color:#FFFFFF">
         <col span="2"style="background-color:rgb(0,0,0); color:#FFFFFF">
         <col span="2"style="background-color:rgb(0,0,0); color:#FFFFFF">
-
+        <col span="2"style="background-color:rgb(0,0,0); color:#FFFFFF">
         <tr>
-        <th colspan="1"><div class="heading">Pin</div></th>
-        <th colspan="1"><div class="heading">Value</div></th>
-        <th colspan="1"><div class="heading">  mV</div></th>
+        <th colspan="1"><div class="heading">Topic</div></th>
+        <th colspan="1"><div class="heading">Value1</div></th>
+        <th colspan="1"><div class="heading">Value2</div></th>
+        <th colspan="1"><div class="heading">Value3</div></th>
         </tr>
 
         <tr>
@@ -298,6 +300,7 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
             <td><div class="bodytext">UP/DN TIME</div></td>
             <td><div class="tabledata" id = "u1"></div></td>
             <td><div class="tabledata" id = "u2"></div></td>
+            <td><div class="tabledata" id = "u3"></div></td>
         </tr>
 
 
@@ -578,6 +581,14 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
           document.getElementById("u2").style.backgroundColor=color;
           //document.getElementById("u2").style.borderRadius="5px";
           
+          
+          xmldoc = xmlResponse.getElementsByTagName("NOTIME");
+          message = xmldoc[0].firstChild.nodeValue;
+          document.getElementById("u3").innerHTML=message;
+          document.getElementById("u3").style.width=(barwidth+"%");
+          // you can set color dynamically, maybe blue below a value, red above
+          document.getElementById("u3").style.backgroundColor=color;
+          //document.getElementById("u3").style.borderRadius="5px";
           
 
 

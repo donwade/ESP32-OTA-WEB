@@ -149,8 +149,12 @@ void setup() {
   setup_M5();
   Serial.printf("BUILT ON %s %s *** ESP-IDF VER = %s ***\n", __DATE__, __TIME__, esp_get_idf_version());                                                                          
 
+/*
+  not needed for this project
   bool ok = SD.begin(SDCARD_CSPIN, SPI, 8000000); 
   Serial.printf("SD=%d\n", ok); 
+*/
+  
   lsetTextColor(_WHITE, _BLACK);
   lsetCursor(0, 0);
   
@@ -276,6 +280,7 @@ spawnTaskAndDogV2( runBatmonTask, 	//(void * not_used)TaskFunction_t pvTaskCode,
 void loop() 
 {
 
+/*
   if ( millis() > now + 10000)
   {
     colourBarX(_RED, 2);
@@ -285,9 +290,8 @@ void loop()
 	
     colourBarX(_GREEN, 2);
   }
-  
-  static int8_t p32 = -1;
-  
+*/
+ 
   ota_loop();
   
   // you main loop that measures, processes, runs code, etc.
@@ -508,6 +512,9 @@ void SendXML()
   strcat(XML, xml_tbuf);
 
   sprintf(xml_tbuf, "<UDTIME2>%+d</UDTIME2>\n", who.chargeTime);
+  strcat(XML, xml_tbuf);
+
+  sprintf(xml_tbuf, "<NOTIME>%+d</NOTIME>\n", who.holdchargeTime);
   strcat(XML, xml_tbuf);
 
   // design point 2
