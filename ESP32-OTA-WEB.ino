@@ -472,11 +472,15 @@ void SendXML()
   getBatteryStats (&batman);
 
   // send USB voltage
-  sprintf(xml_tbuf, "<USBVOLTAGE1>%5.2fv</USBVOLTAGE1>\n", (float)batman.usbMax_mV/1000.);
+  sprintf(xml_tbuf, "<USBVOLTAGE1>%5.2fv</USBVOLTAGE1>\n", (float)batman.usbMin_mV/1000.);
   strcat(XML, xml_tbuf);
 
-  sprintf(xml_tbuf, "<USBVOLTAGE2>%5.2fv</USBVOLTAGE2>\n", (float)batman.usbMin_mV/1000.);
+  sprintf(xml_tbuf, "<USBVOLTAGE2>%5.2fv</USBVOLTAGE2>\n", (float)batman.usb_mV/1000.);
   strcat(XML, xml_tbuf);
+
+  sprintf(xml_tbuf, "<USBVOLTAGE3>%5.2fv</USBVOLTAGE3>\n", (float)batman.usbMax_mV/1000.);
+  strcat(XML, xml_tbuf);
+
 
 
   // send battery voltage

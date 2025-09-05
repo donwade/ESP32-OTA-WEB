@@ -271,9 +271,10 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
         </tr>
 
         <tr>
-            <td><div class="bodytext">USB VOLTAGE</div></td>
+            <td><div class="bodytext">USB LO/NOW/HI</div></td>
             <td><div class="tabledata" id = "g1"></div></td>
             <td><div class="tabledata" id = "g2"></div></td>
+            <td><div class="tabledata" id = "g3"></div></td>
         </tr>
 
 
@@ -501,6 +502,14 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
         // you can set color dynamically, maybe blue below a value, red above
         document.getElementById("g2").style.backgroundColor=color;
         //document.getElementById("g2").style.borderRadius="5px";
+
+        xmldoc = xmlResponse.getElementsByTagName("USBVOLTAGE3");
+        message = xmldoc[0].firstChild.nodeValue;
+        document.getElementById("g3").innerHTML=message;
+        document.getElementById("g3").style.width=(barwidth+"%");
+        // you can set color dynamically, maybe blue below a value, red above
+        document.getElementById("g3").style.backgroundColor=color;
+        //document.getElementById("g3").style.borderRadius="5px";
 
         //-----------------------------------------------
 
