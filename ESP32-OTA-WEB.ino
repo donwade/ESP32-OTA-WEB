@@ -488,12 +488,16 @@ void SendXML()
 
   // send battery voltage
   int32_t hilo;
-  nvGetValue("BATT_HI", &hilo);
-  sprintf(xml_tbuf, "<BATT_HI>%5.2fv</BATT_HI>\n", (float)hilo/1000.);
-  strcat(XML, xml_tbuf);
-
+  
   nvGetValue("BATT_LO", &hilo);
   sprintf(xml_tbuf, "<BATT_LO>%5.2fv</BATT_LO>\n", (float)hilo/1000.);
+  strcat(XML, xml_tbuf);
+
+  sprintf(xml_tbuf, "<BATT_NO>%5.2fv</BATT_NO>\n", batman.batt_mV/1000.);
+  strcat(XML, xml_tbuf);
+
+  nvGetValue("BATT_HI", &hilo);
+  sprintf(xml_tbuf, "<BATT_HI>%5.2fv</BATT_HI>\n", (float)hilo/1000.);
   strcat(XML, xml_tbuf);
 
 
@@ -511,10 +515,10 @@ void SendXML()
   sprintf(xml_tbuf, "<UDTIME1>%+d</UDTIME1>\n", -who.dischargeTime);
   strcat(XML, xml_tbuf);
 
-  sprintf(xml_tbuf, "<UDTIME2>%+d</UDTIME2>\n", who.chargeTime);
+  sprintf(xml_tbuf, "<NOTIME>%+d</NOTIME>\n", who.holdchargeTime);
   strcat(XML, xml_tbuf);
 
-  sprintf(xml_tbuf, "<NOTIME>%+d</NOTIME>\n", who.holdchargeTime);
+  sprintf(xml_tbuf, "<UDTIME2>%+d</UDTIME2>\n", who.chargeTime);
   strcat(XML, xml_tbuf);
 
   // design point 2

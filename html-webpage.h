@@ -284,9 +284,10 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
         </tr>
 
         <tr>
-            <td><div class="bodytext">BAT HI/LO</div></td>
+            <td><div class="bodytext">BAT LO/NOW/HI</div></td>
             <td><div class="tabledata" id = "j1"></div></td>
             <td><div class="tabledata" id = "j2"></div></td>
+            <td><div class="tabledata" id = "j3"></div></td>
         </tr>
 
 
@@ -522,7 +523,7 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
         //document.getElementById("b2").style.borderRadius="5px";
         //-----------------------------------------------
 
-        xmldoc = xmlResponse.getElementsByTagName("BATT_HI");
+        xmldoc = xmlResponse.getElementsByTagName("BATT_LO");
         message = xmldoc[0].firstChild.nodeValue;
         document.getElementById("j1").innerHTML=message;
         document.getElementById("j1").style.width=(barwidth+"%");
@@ -530,14 +531,22 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
         document.getElementById("j1").style.backgroundColor=color;
         //document.getElementById("j1").style.borderRadius="5px";
 
-
-        xmldoc = xmlResponse.getElementsByTagName("BATT_LO");
+        xmldoc = xmlResponse.getElementsByTagName("BATT_NO");
         message = xmldoc[0].firstChild.nodeValue;
         document.getElementById("j2").innerHTML=message;
         document.getElementById("j2").style.width=(barwidth+"%");
         // you can set color dynamically, maybe blue below a value, red above
         document.getElementById("j2").style.backgroundColor=color;
         //document.getElementById("j2").style.borderRadius="5px";
+
+
+        xmldoc = xmlResponse.getElementsByTagName("BATT_HI");
+        message = xmldoc[0].firstChild.nodeValue;
+        document.getElementById("j3").innerHTML=message;
+        document.getElementById("j3").style.width=(barwidth+"%");
+        // you can set color dynamically, maybe blue below a value, red above
+        document.getElementById("j3").style.backgroundColor=color;
+        //document.getElementById("j3").style.borderRadius="5px";
 
 
         //-----------------------------------------------
@@ -571,9 +580,7 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
           //document.getElementById("u1").style.borderRadius="5px";
           
           
-          //-----------------------------------------------
-          
-          xmldoc = xmlResponse.getElementsByTagName("UDTIME2");
+          xmldoc = xmlResponse.getElementsByTagName("NOTIME");
           message = xmldoc[0].firstChild.nodeValue;
           document.getElementById("u2").innerHTML=message;
           document.getElementById("u2").style.width=(barwidth+"%");
@@ -581,8 +588,11 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
           document.getElementById("u2").style.backgroundColor=color;
           //document.getElementById("u2").style.borderRadius="5px";
           
+
           
-          xmldoc = xmlResponse.getElementsByTagName("NOTIME");
+          //-----------------------------------------------
+          
+          xmldoc = xmlResponse.getElementsByTagName("UDTIME2");
           message = xmldoc[0].firstChild.nodeValue;
           document.getElementById("u3").innerHTML=message;
           document.getElementById("u3").style.width=(barwidth+"%");
@@ -590,7 +600,6 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
           document.getElementById("u3").style.backgroundColor=color;
           //document.getElementById("u3").style.borderRadius="5px";
           
-
 
           //-----------------------------------------------
 <!--
