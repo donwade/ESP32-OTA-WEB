@@ -1,7 +1,15 @@
-//https://medium.com/@turman1701/va-list-in-c-exploring-ft-printf-bb2a19fcd128
+
 
 #include <Arduino.h>
+#include <RTClib.h>
+
 #include "common.h"
+
+//---------------------------------------------------------------
+// my trace function
+
+//https://medium.com/@turman1701/va-list-in-c-exploring-ft-printf-bb2a19fcd128
+
 void trace(const char *fname, uint32_t lineNo, ...)
 {
     va_list args, args2;
@@ -30,3 +38,4 @@ void trace(const char *fname, uint32_t lineNo, ...)
     va_end(args);
 	return;
 }
+

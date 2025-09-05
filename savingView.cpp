@@ -10,6 +10,7 @@
 #include <SPI.h>
 #include <SD.h>
 #include "m5Core2-only.h"
+#include "RTC.h"
 #include "batmon.h"
 
 
@@ -124,7 +125,15 @@ void * savingMode(BUTTON_EVENT some_key)
 	
 	battmon data;  
 	getBatmon(&data);
-	cprintf(_CYAN, 6, "up=%d dn=%d", data.chargeTime, data.dischargeTime);
+	
+	//cprintf(_CYAN, 5, "up=%d dn=%d", data.chargeTime, data.dischargeTime);
+
+	char chg[80];
+	char dis[80];
+	secondsToHMS(data.chargeTime, chg);
+    secondsToHMS(data.dischargeTime, dis);
+	cprintf(_CYAN, 5, "up=%s", chg);
+	cprintf(_CYAN, 6, "dn=%s", dis);
 	
 	// all display updates done ... just keys left
 	if (some_key == DISPLAY_REFRESH) return (void*) savingMode;
