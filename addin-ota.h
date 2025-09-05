@@ -10,5 +10,7 @@ extern bool nvCreateValue(char *name, int32_t value, bool bfast = false);
 extern bool nvGetSetGtValue(char *name, int32_t *value);
 extern bool nvGetSetLtValue(char *name, int32_t *value);
 
+extern void setupSleepByGPIO(gpio_num_t wakeupPin);
+extern void enterLightSleep(void);
 
 

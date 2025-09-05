@@ -97,14 +97,14 @@ void runPingTask(void *not_used);
 #define PIN_ARBITRARY_OUTPUT 26 // connected to nothing but an example of a digital write from the web page
 #define PIN_FAN_PMW 		 27 // pin 27 and is a PWM signal to control a fan speed
 #define PIN_LED 			  2 //On board LED
-#define P32_WHT_RDR			 34 // some analog input sensor
+#define P32_WHT_RADAR			 34 // some analog input sensor
 #define P33_YLW_NC 			 35 // some analog input sensor
 #else
 // start your defines for pins for sensors, outputs etc.
 #define PIN_ARBITRARY_OUTPUT -1 // connected to nothing but an example of a digital write from the web page
 #define PIN_FAN_PMW 		 -1 // pin 27 and is a PWM signal to control a fan speed
 #define PIN_LED 			 -1 //On board LED
-#define P32_WHT_RDR			 32 // 
+#define P32_WHT_RADAR		 32 // 
 #endif
 
 // variables to store measure data and sensor states
@@ -141,6 +141,8 @@ extern void ota_setup(void);
 extern void ota_loop(void);
 
 static const gpio_num_t SDCARD_CSPIN = GPIO_NUM_4;
+uint32_t now = 0;
+
 
 void setup() {
 
@@ -155,9 +157,10 @@ void setup() {
   ota_setup();
   
   //pinMode(PIN_FAN_PMW, OUTPUT);
-  pinMode(PIN_LED, OUTPUT);
+  //pinMode(PIN_LED, OUTPUT);
 
-  pinMode(P32_WHT_RDR, INPUT); //was analogRead(P32_WHT_RDR);
+  pinMode(P32_WHT_RADAR, INPUT); 
+  setupSleepByGPIO((gpio_num_t)P32_WHT_RADAR);
 
   // turn off led
   LED0 = false;
@@ -266,10 +269,23 @@ spawnTaskAndDogV2( runBatmonTask, 	//(void * not_used)TaskFunction_t pvTaskCode,
 				   4				//UBaseType_t uxPriority)
 				   );
 #endif
+      now = millis();
+
 }
 
-void loop() {
+void loop() 
+{
 
+  if ( millis() > now + 10000)
+  {
+    colourBarX(_RED, 2);
+
+	enterLightSleep();
+	now = millis();
+	
+    colourBarX(_GREEN, 2);
+  }
+  
   static int8_t p32 = -1;
   
   ota_loop();
@@ -281,12 +297,13 @@ void loop() {
   // in my example here every 50 ms, i measure some analog sensor data (my finger dragging over the pins
   // and process accordingly
   // analog input can be from temperature sensors, light sensors, digital pin sensors, etc.
-  
+
+#if 0  
   if ((millis() - lastSensorTime) >= 50) 
   {
     //Serial.println("Reading Sensors");
     lastSensorTime = millis();
-    A2D_P32 =  digitalRead(P32_WHT_RDR); //analogRead(P32_WHT_RDR);
+    A2D_P32 =  digitalRead(P32_WHT_RADAR); //analogRead(P32_WHT_RADAR);
 
 	if (p32 != A2D_P32)
 	{
@@ -304,6 +321,7 @@ void loop() {
     //A2D_P33_mV = A2D_P33 * 3300 / 4096;
 
   }
+#endif
 
   // no matter what you must call this handleClient repeatidly--otherwise the web page
   // will not get instructions to do something
@@ -429,10 +447,13 @@ void SendWebsite() {
 // for phsyical position in a 'excel' formatted table. That has
 // nothing to do with tags.
 
-void SendXML() {
+void SendXML() 
+{
 
+  #if 0 //dwade
   Serial.printf("%s:%d %s\n", __FUNCTION__, __LINE__, format_date_time());
-
+  #endif
+  
   // Serial.println("sending xml");
 
   strcpy(XML, "<?xml version = '1.0'?>\n<Data>\n");
@@ -520,8 +541,10 @@ void SendXML() {
   // actually print it to the serial monitor and use some text editor to get the size
   // then pad and adjust char XML[2048]; above
 
+  #if 0 // dwade no print xml
   Serial.println(XML);
-
+  #endif
+  
   // you may have to play with this value, big pages need more porcessing time, and hence
   // a longer timeout that 200 ms
 

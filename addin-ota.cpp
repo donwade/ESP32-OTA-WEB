@@ -7,6 +7,7 @@
 #include <NetworkUdp.h>
 #include <ArduinoOTA.h>
 
+#include "watchdogs.h"
 #include "addin-ota.h"
 #include "common.h"
 
@@ -48,8 +49,9 @@ int32_t nBrownoutCtr;
 
 #include <rom/rtc.h>
 
-uint8_t getResetReason(RESET_REASON reason)
+uint8_t getResetReason(char *msg, RESET_REASON reason)
 {
+  Serial.printf("\n%s ", msg);
   switch (reason)
   {
     /**<1, Vbat power on reset*/
@@ -100,6 +102,7 @@ uint8_t getResetReason(RESET_REASON reason)
     default : Serial.println ("NO_MEAN");
   }
   
+  Serial.println();
   return reason;
 }
 
@@ -430,15 +433,13 @@ void ota_setup()
   nvIncrementValue("RESET_CTR", &val);
   TRACE("reset count = %d\n", val);
 
-  val = getResetReason(rtc_get_reset_reason(0));
+  val = getResetReason("CPU0: ", rtc_get_reset_reason(0));
   nvSetValue("CPU0_RESET", val);
   nvGetValue("CPU0_RESET", &val);
-  TRACE("reset reason CPU 0 = %d\n", val);
   
-  val = getResetReason(rtc_get_reset_reason(1));
+  val = getResetReason("CPU1: ", rtc_get_reset_reason(1));
   nvSetValue("CPU1_RESET", val);
   nvGetValue("CPU1_RESET", &val);
-  TRACE("reset reason CPU 1 = %d\n", val);
 
   WiFi.mode(WIFI_STA);
   WiFi.begin(ssid, password);
@@ -526,3 +527,125 @@ void ota_loop()
 
 	ArduinoOTA.handle();
 }
+
+//-------------------------------------------------------------
+
+void reportWakeUpCause()
+{
+  esp_sleep_wakeup_cause_t wakeup_reason;
+
+  wakeup_reason = esp_sleep_get_wakeup_cause();
+
+  switch(wakeup_reason)
+  {
+
+    case ESP_SLEEP_WAKEUP_UNDEFINED:
+		Serial.println(	"Wakeup:In case of deep sleep, reset was not:  exit from deep sleep");
+	break;
+		
+    case ESP_SLEEP_WAKEUP_ALL:
+		Serial.println("Wakeup:Not a wakeup cause, used to disable all wakeup sources with esp_sleep_disable_wakeup_source");
+	break;
+		
+    case ESP_SLEEP_WAKEUP_EXT0:
+		Serial.println("Wakeup:external signal using RTC_IO");
+	break;
+		
+    case ESP_SLEEP_WAKEUP_EXT1:
+		Serial.println("Wakeup:external signal using RTC_CNTL");
+	break;
+		
+    case ESP_SLEEP_WAKEUP_TIMER:
+		Serial.println("Wakeup:timer");
+	break;
+		
+    case ESP_SLEEP_WAKEUP_TOUCHPAD:
+		Serial.println("Wakeup:touchpad");
+	break;
+		
+    case ESP_SLEEP_WAKEUP_ULP:
+		Serial.println("Wakeup:ULP program");
+	break;
+		
+    case ESP_SLEEP_WAKEUP_GPIO:
+		Serial.println("Wakeup:GPIO (light sleep only on ESP32, S2 and S3)");
+	break;
+		
+    case ESP_SLEEP_WAKEUP_UART:
+		Serial.println("Wakeup:UART (light sleep only)");
+	break;
+		
+    case ESP_SLEEP_WAKEUP_WIFI:
+		Serial.println("Wakeup:WIFI (light sleep only)");
+	break;
+		
+    case ESP_SLEEP_WAKEUP_COCPU:
+		Serial.println("Wakeup:COCPU");
+	break;
+		
+    case ESP_SLEEP_WAKEUP_COCPU_TRAP_TRIG:
+		Serial.println("Wakeup:COCPU crash");
+	break;
+		
+    case ESP_SLEEP_WAKEUP_BT:
+		Serial.println("Wakeup:BT (light sleep only)");
+	break;
+		
+    case ESP_SLEEP_WAKEUP_VAD:
+		Serial.println("Wakeup:VAD");
+	break;
+
+    default : 
+		Serial.printf("Wakeup was not caused by deep sleep: %d\n",wakeup_reason);
+	break;
+  }
+}
+
+//-------------------------------------------------------------
+
+#include "esp_sleep.h"
+#include "driver/gpio.h"
+
+uint8_t doNothing;
+
+// ISR for wakeupPin
+void IRAM_ATTR handleInterrupt1() 
+{
+    doNothing++;  // stop optimizer from deleting entire function.
+}
+
+void setupSleepByGPIO(gpio_num_t wakeupPin) 
+{
+    //pinMode(wakeupPin, INPUT_PULLUP); // pull-up resistor
+
+    // Configure GPIOs as wake-up source
+    gpio_wakeup_enable(wakeupPin, GPIO_INTR_LOW_LEVEL); // Trigger wake-up on high level
+
+    // Enable GPIO wake-up source
+    esp_err_t result = esp_sleep_enable_gpio_wakeup();
+
+    if (result == ESP_OK) {
+        Serial.println("GPIO Wake-Up set successfully.");
+    } else {
+        Serial.println("Failed to set GPIO Wake-Up as wake-up source.");
+    }
+
+    // Attach interrupts to GPIO pin
+    attachInterrupt(digitalPinToInterrupt(wakeupPin), 
+    				handleInterrupt1, 
+    				FALLING);
+	
+}
+
+//-------------------------------------------------------------
+void enterLightSleep() 
+{
+    TRACE("Enter Sleep\n");
+	uint32_t ms = millis();
+    esp_light_sleep_start();    // Enter light sleep
+    Serial.printf("  Woke up at %d ms\n", millis() - ms);
+	
+    reportWakeUpCause();
+}
+
+
