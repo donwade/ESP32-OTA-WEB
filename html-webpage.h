@@ -277,13 +277,6 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
             <td><div class="tabledata" id = "g3"></div></td>
         </tr>
 
-
-        <tr>
-            <td><div class="bodytext">BAT VOLTAGE</div></td>
-            <td><div class="tabledata" id = "b1"></div></td>
-            <td><div class="tabledata" id = "b2"></div></td>
-        </tr>
-
         <tr>
             <td><div class="bodytext">BAT LO/NOW/HI</div></td>
             <td><div class="tabledata" id = "j1"></div></td>
@@ -296,6 +289,7 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
             <td><div class="bodytext">BAT CURRENT</div></td>
             <td><div class="tabledata" id = "c1"></div></td>
             <td><div class="tabledata" id = "c2"></div></td>
+            <td><div class="tabledata" id = "c3"></div></td>
         </tr>
 
         <tr>
@@ -511,26 +505,7 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
         document.getElementById("g3").style.backgroundColor=color;
         //document.getElementById("g3").style.borderRadius="5px";
 
-        //-----------------------------------------------
-
-        xmldoc = xmlResponse.getElementsByTagName("BATVOLTAGE1");
-        message = xmldoc[0].firstChild.nodeValue;
-        document.getElementById("b1").innerHTML=message;
-        document.getElementById("b1").style.width=(barwidth+"%");
-        // you can set color dynamically, maybe blue below a value, red above
-        document.getElementById("b1").style.backgroundColor=color;
-        //document.getElementById("b1").style.borderRadius="5px";
-
-        //-----------------------------------------------
-
-        xmldoc = xmlResponse.getElementsByTagName("BATVOLTAGE2");
-        message = xmldoc[0].firstChild.nodeValue;
-        document.getElementById("b2").innerHTML=message;
-        document.getElementById("b2").style.width=(barwidth+"%");
-        // you can set color dynamically, maybe blue below a value, red above
-        document.getElementById("b2").style.backgroundColor=color;
-        //document.getElementById("b2").style.borderRadius="5px";
-        //-----------------------------------------------
+         //-----------------------------------------------
 
         xmldoc = xmlResponse.getElementsByTagName("BATT_LO");
         message = xmldoc[0].firstChild.nodeValue;
@@ -577,6 +552,17 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
         // you can set color dynamically, maybe blue below a value, red above
         document.getElementById("c2").style.backgroundColor=color;
         //document.getElementById("c2").style.borderRadius="5px";
+
+          //-----------------------------------------------
+          
+          xmldoc = xmlResponse.getElementsByTagName("BATCURRENT3");
+          message = xmldoc[0].firstChild.nodeValue;
+          document.getElementById("c3").innerHTML=message;
+          document.getElementById("c3").style.width=(barwidth+"%");
+          // you can set color dynamically, maybe blue below a value, red above
+          document.getElementById("c3").style.backgroundColor=color;
+          //document.getElementById("c3").style.borderRadius="5px";
+          
 
           //-----------------------------------------------
           
