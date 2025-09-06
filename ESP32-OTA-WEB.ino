@@ -289,7 +289,7 @@ void loop()
     colourBarX(_CYAN, 2);
 
 	//enterLightSleepGPIO();
-	enterLightSleepTimer();
+	//enterLightSleepTimer();
 	oldTime = millis();
 	
 	vPrintTaskStats(NULL);

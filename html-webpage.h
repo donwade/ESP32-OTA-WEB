@@ -293,7 +293,7 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
         </tr>
 
         <tr>
-            <td><div class="bodytext">UP/HOLD/DN TIME</div></td>
+            <td><div class="bodytext">DN/HOLD/UP TIME</div></td>
             <td><div class="tabledata" id = "u1"></div></td>
             <td><div class="tabledata" id = "u2"></div></td>
             <td><div class="tabledata" id = "u3"></div></td>
