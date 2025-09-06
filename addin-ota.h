@@ -11,6 +11,10 @@ extern bool nvGetSetGtValue(char *name, int32_t *value);
 extern bool nvGetSetLtValue(char *name, int32_t *value);
 
 extern void setupSleepByGPIO(gpio_num_t wakeupPin);
-extern void enterLightSleep(void);
+extern void enterLightSleepGPIO(void);
+
+extern void setupLightSleepByTimer(uint32_t timeMs);
+extern void enterLightSleepTimer(void);
+
 
 

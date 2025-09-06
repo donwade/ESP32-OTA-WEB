@@ -141,7 +141,7 @@ extern void ota_setup(void);
 extern void ota_loop(void);
 
 static const gpio_num_t SDCARD_CSPIN = GPIO_NUM_4;
-uint32_t now = 0;
+uint32_t oldTime = 0;
 
 
 void setup() {
@@ -165,6 +165,7 @@ void setup() {
 
   pinMode(P32_WHT_RADAR, INPUT); 
   setupSleepByGPIO((gpio_num_t)P32_WHT_RADAR);
+  setupLightSleepByTimer(3000);
 
   // turn off led
   LED0 = false;
@@ -273,24 +274,28 @@ spawnTaskAndDogV2( runBatmonTask, 	//(void * not_used)TaskFunction_t pvTaskCode,
 				   4				//UBaseType_t uxPriority)
 				   );
 #endif
-      now = millis();
+      oldTime = millis();
 
 }
+
+extern void vPrintTaskStats( void *pvParameters );
 
 void loop() 
 {
 
-/*
-  if ( millis() > now + 10000)
-  {
-    colourBarX(_RED, 2);
 
-	enterLightSleep();
-	now = millis();
+  if ( millis() > oldTime + 10000)
+  {
+    colourBarX(_CYAN, 2);
+
+	//enterLightSleepGPIO();
+	enterLightSleepTimer();
+	oldTime = millis();
 	
-    colourBarX(_GREEN, 2);
+	vPrintTaskStats(NULL);
+	
+    colourBarX(_DGREEN, 2);
   }
-*/
  
   ota_loop();
   

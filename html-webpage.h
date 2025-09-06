@@ -293,7 +293,7 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
         </tr>
 
         <tr>
-            <td><div class="bodytext">UP/DN TIME</div></td>
+            <td><div class="bodytext">UP/HOLD/DN TIME</div></td>
             <td><div class="tabledata" id = "u1"></div></td>
             <td><div class="tabledata" id = "u2"></div></td>
             <td><div class="tabledata" id = "u3"></div></td>
@@ -584,9 +584,6 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
           //document.getElementById("u2").style.borderRadius="5px";
           
 
-          
-          //-----------------------------------------------
-          
           xmldoc = xmlResponse.getElementsByTagName("UDTIME2");
           message = xmldoc[0].firstChild.nodeValue;
           document.getElementById("u3").innerHTML=message;

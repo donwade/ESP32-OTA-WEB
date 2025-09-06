@@ -9,6 +9,7 @@
 
 #include "watchdogs.h"
 #include "addin-ota.h"
+#include "RTC.h"
 #include "common.h"
 
 //#include "esp_brownout_detector.h" // Include the brownout detector header
@@ -618,6 +619,19 @@ void IRAM_ATTR handleInterrupt1()
     doNothing++;  // stop optimizer from deleting entire function.
 }
 
+void setupLightSleepByTimer(uint32_t timeMs)
+{
+	esp_sleep_enable_timer_wakeup(timeMs * 1000);
+	TRACE("prepared light sleep timer for %d mS\n", timeMs);
+}
+
+void enterLightSleepTimer(void)
+{
+	uint32_t now = getUTCfromRTC();
+	esp_light_sleep_start();
+	TRACE("exit sleep.. time = %d000 mS\n", getUTCfromRTC() - now);
+}
+
 void setupSleepByGPIO(gpio_num_t wakeupPin) 
 {
     //pinMode(wakeupPin, INPUT_PULLUP); // pull-up resistor
@@ -642,7 +656,7 @@ void setupSleepByGPIO(gpio_num_t wakeupPin)
 }
 
 //-------------------------------------------------------------
-void enterLightSleep() 
+void enterLightSleepGPIO() 
 {
     TRACE("Enter Sleep\n");
 	uint32_t ms = millis();
