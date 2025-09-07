@@ -423,25 +423,23 @@ bool nvIncrementValue(char *name, int32_t *value)
 void ota_setup()
 {
 
-  Serial.begin(115200);
-  int32_t val;
-  
-  
-  // Initialize NVS
-  brownout_init();
-  
-  init_NVram();
+	int32_t val;
 
-  nvIncrementValue("RESET_CTR", &val);
-  TRACE("reset count = %d\n", val);
+	// Initialize NVS
+	brownout_init();
 
-  val = getResetReason("CPU0: ", rtc_get_reset_reason(0));
-  nvSetValue("CPU0_RESET", val);
-  nvGetValue("CPU0_RESET", &val);
-  
-  val = getResetReason("CPU1: ", rtc_get_reset_reason(1));
-  nvSetValue("CPU1_RESET", val);
-  nvGetValue("CPU1_RESET", &val);
+	init_NVram();
+
+	nvIncrementValue("RESET_CTR", &val);
+	TRACE("reset count = %d\n", val);
+
+	val = getResetReason("CPU0: ", rtc_get_reset_reason(0));
+	nvSetValue("CPU0_RESET", val);
+	nvGetValue("CPU0_RESET", &val);
+
+	val = getResetReason("CPU1: ", rtc_get_reset_reason(1));
+	nvSetValue("CPU1_RESET", val);
+	nvGetValue("CPU1_RESET", &val);
 
 /*
   // https://deepbluembedded.com/esp32-change-cpu-speed-clock-frequency/
@@ -462,25 +460,28 @@ void ota_setup()
 */
 
 
-  setCpuFrequencyMhz(CPU_FREQ);  // 10 thru 40 ... fails on wifi
+	setCpuFrequencyMhz(CPU_FREQ);  // 10 thru 40 ... fails on wifi
 
-  Serial.println();
-  TRACE ("-------- CPU FREQ %d/240 -------------------'");
-  TRACE ("Xtal frequency = %d mHz (normally 40)\n", getXtalFrequencyMhz());
-  TRACE ("CpuFrequency = %d mHz (normally 240)\n", getCpuFrequencyMhz());
-  TRACE ("APB bus frequency = %d mHz (normally 80)\n",  getApbFrequency()/1000000);
+	Serial.println();
+	TRACE ("-------- CPU FREQ %d/240 -------------------\n", CPU_FREQ);
+	TRACE ("Xtal frequency = %d mHz (normally 40)\n", getXtalFrequencyMhz());
+	TRACE ("CpuFrequency = %d mHz (normally 240)\n", getCpuFrequencyMhz());
+	TRACE ("APB bus frequency = %d mHz (normally 80)\n",  getApbFrequency()/1000000);
 
 
-  WiFi.mode(WIFI_STA);
-  WiFi.begin(ssid, password);
-  
-  while (WiFi.waitForConnectResult() != WL_CONNECTED) 
-  {
-    Serial.println("Connection Failed! Rebooting...");
-    delay(5000); 
-    ESP.restart();
-  }
-  
+	WiFi.mode(WIFI_STA);
+	WiFi.begin(ssid, password);
+
+	while (WiFi.waitForConnectResult() != WL_CONNECTED) 
+	{
+		Serial.println("Connection Failed! Rebooting...");
+		delay(5000); 
+		ESP.restart();
+	}
+
+	TRACE("initRTCfromNTP NOT being called. Coin testing\n");
+	//initRTCfromNTP();
+
 	// Port defaults to 3232
 	ArduinoOTA.setPort(3232);
 
@@ -528,13 +529,13 @@ void ota_setup()
 	  }
 	});
 
+
+
 	ArduinoOTA.begin();
 
 	Serial.println("Ready");
 	Serial.print("IP address: ");
 	Serial.println(WiFi.localIP());
-
-	//pinMode(LED_BUILTIN, OUTPUT);  // blinky
 
 }
 

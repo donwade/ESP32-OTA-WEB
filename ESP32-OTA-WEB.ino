@@ -460,7 +460,7 @@ void SendXML()
 {
 
   #if 0 //dwade
-  Serial.printf("%s:%d %s\n", __FUNCTION__, __LINE__, format_date_time());
+  Serial.printf("%s:%d %s\n", __FUNCTION__, __LINE__, formattedTimeRTC());
   #endif
   
   // Serial.println("sending xml");
@@ -504,8 +504,9 @@ void SendXML()
   sprintf(xml_tbuf, "<BATCURRENT1>%d</BATCURRENT1>\n", batman.current_mA);
   strcat(XML, xml_tbuf);
 
-  sprintf(xml_tbuf, "<BATCURRENT2>%s</BATCURRENT2>\n", batman.chargeDirection < 0 ? "DISCHARGE" :
-  													   batman.chargeDirection > 0 ? "CHARGE" : "STOPPED");
+  sprintf(xml_tbuf, "<BATCURRENT2>%s</BATCURRENT2>\n", batman.chargeDirection < 0 ? "DRAINING" :
+  													   batman.chargeDirection > 0 ? "CHARGE  " : 
+													   								"STOPPED ");
   strcat(XML, xml_tbuf);
 
   sprintf(xml_tbuf, "<BATCURRENT3>%d%% </BATCURRENT3>\n", batman.percent);

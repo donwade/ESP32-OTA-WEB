@@ -293,7 +293,7 @@ void showPower(void)
 	}
 	else
 	{
-		cprintf(_YELLOW, 6, "%s", format_date_time());
+		cprintf(_YELLOW, 6, "%s", formattedTimeRTC());
 	}
 }	
 

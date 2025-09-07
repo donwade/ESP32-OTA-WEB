@@ -107,6 +107,8 @@ void * savingMode(BUTTON_EVENT some_key)
 						battery.chargeDirection < 0 ? "DIS" : 
 						battery.chargeDirection > 0 ? "CHG" : "STP");
 
+	cprintf(_CYAN, lineno++, "%s", formattedTimeRTC());
+		
 
 	cprintf(_GREEN, lineno++, "host= %s", LOCAL_HOSTNAME);
 

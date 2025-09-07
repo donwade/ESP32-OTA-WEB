@@ -1,15 +1,30 @@
 #include <M5Unified.h>
+#include <TimeLib.h>
 #include "RTC.h"
-#include "TimeLib.h"
+#include "common.h"
 
 //-----------------------------------------------------------------
-char *format_date_time() 
+char *formattedTimeRTC() 
 { //easy way to print date and time
+
 	static char tstring[40]; 
-	sprintf(tstring, "%02d/%02d/%4d %02d:%02d:%02d", day(), month(), year(), hour(), minute(), second());
+
+	m5::rtc_time_t TimeStruct;
+	m5::rtc_date_t DateStruct;
+	
+	M5.Rtc.getTime(&TimeStruct);
+	M5.Rtc.getDate(&DateStruct);
+
+	sprintf(tstring, "%02d/%02d/%4d %02d:%02d:%02d", 
+			DateStruct.date,
+			DateStruct.month, 
+			DateStruct.year, 
+			TimeStruct.hours, 
+			TimeStruct.minutes, 
+			TimeStruct.seconds);
+	
 	return tstring; 
 }
-
 //-----------------------------------------------------------------
 
 uint32_t getUTCfromRTC(void)
@@ -54,6 +69,7 @@ uint32_t getUTCfromRTC(void)
 	//Serial.printf("calculated UTC from RTC = %d\n", UTC);
 	return UTC;
 }
+
 //---------------------------------------------------------------------------
 
 void setRTC(uint8_t hr, uint8_t min, uint8_t sec, uint8_t day, uint8_t month, uint16_t year)
@@ -64,7 +80,7 @@ void setRTC(uint8_t hr, uint8_t min, uint8_t sec, uint8_t day, uint8_t month, ui
 		//Serial.println("After TZ tweak");
 		//Serial.print("now() = ");
 		//Serial.println(now());
-		Serial.println(format_date_time());
+		Serial.println(formattedTimeRTC());
 
 		// stuff into RTC chip
 		TimeStruct.hours = hr;
@@ -119,4 +135,58 @@ char *stpWatchString (stopwatch *who, char *hms)
 	hms = secondsToHMS (epoch_time, hms);
 	return hms; 
 }
+//-------------------------------------------------------
+
+#define NTP_TIMEZONE "UTC-8"  // POSIX standard, in which "UTC+0" is UTC London, "UTC-8" is UTC+8 Beijing, "UTC+5" is UTC-5 New York
+#define NTP_SERVER1  "0.pool.ntp.org"
+#define NTP_SERVER2  "1.pool.ntp.org"
+#define NTP_SERVER3  "2.pool.ntp.org"
+
+#include <WiFi.h>
+
+// Different versions of the framework have different SNTP header file names and availability.
+#if __has_include(<esp_sntp.h>)
+#include <esp_sntp.h>
+	#define SNTP_ENABLED 1
+#elif __has_include(<sntp.h>)
+	#include <sntp.h>
+	#define SNTP_ENABLED 1
+#endif
+
+#ifndef SNTP_ENABLED
+#define SNTP_ENABLED 0
+#endif
+
+void initRTCfromNTP(void)
+{
+
+	putchar('\n');
+	if (!M5.Rtc.isEnabled()) 
+	{
+		TRACE("FAIL : RTC not found");
+		delay(2000);
+		assert(M5.Rtc.isEnabled());
+	}
+
+	TRACE("cold RTC TIME = %s\n", formattedTimeRTC());
+
+	configTzTime(NTP_TIMEZONE, NTP_SERVER1, NTP_SERVER2, NTP_SERVER3);
+
+	while (sntp_get_sync_status() != SNTP_SYNC_STATUS_COMPLETED) 
+	{
+		printf(".");
+		delay(500);
+	}
+
+	TRACE("\nNTP connected\n");
+
+	time_t t = time(nullptr) + 1;  // Advance one second
+	while (t > time(nullptr));  // Synchronization in seconds
+
+	M5.Rtc.setDateTime(gmtime(&t));
+
+	TRACE("RTC TIME = %s\n", formattedTimeRTC());
+	putchar('\n');
+}
+
 
