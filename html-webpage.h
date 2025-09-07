@@ -331,10 +331,6 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
       </table>
     </div>
 
-    <br>
-        <div class="category">Sensor Controls</div>
-    </br>
-
     <div class="bodytext">LED </div>
         <button type="button" class = "btn" id = "btn0" onclick="ButtonPress0()">Toggle</button>
     </div>
