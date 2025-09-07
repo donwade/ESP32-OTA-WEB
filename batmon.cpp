@@ -24,13 +24,13 @@ void runBatmonTask(void *not_used)
 
 	if (!_lastTime) 
 	{
-		delay(2000);
 		Serial.printf("starting %s\n", __FUNCTION__);
 		_lastTime = getUTCfromRTC();
+		return;
 	}
 	
 	uint32_t now =  getUTCfromRTC();
-	
+
 	uint32_t diff = now - _lastTime;
 
 	//_chargeTime++;
@@ -39,7 +39,7 @@ void runBatmonTask(void *not_used)
 	batt_stats reply;
 	getBatteryStats (&reply);
 
-	if (reply.chargeDirection> 0) 
+	if (reply.chargeDirection > 0) 
 	{
 		colourBarX(_GREEN, 2);
 		_chargeTime += diff;

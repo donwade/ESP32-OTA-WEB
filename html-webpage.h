@@ -120,7 +120,7 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
     }
     .bodytext {
       font-family: "Verdana", "Arial", sans-serif;
-      font-size: 24px;
+      font-size: 18px;
       text-align: left;
       font-weight: light;
       border-radius: 5px;
