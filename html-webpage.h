@@ -331,7 +331,6 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
       </table>
     </div>
 
-    <div class="bodytext">LED </div>
         <button type="button" class = "btn" id = "btn0" onclick="ButtonPress0()">Toggle</button>
     </div>
 
@@ -622,12 +621,12 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
         message = xmldoc[0].firstChild.nodeValue;
     
         if (message == 0){
-          document.getElementById("btn0").innerHTML="Turn ON";
+          document.getElementById("btn0").innerHTML="LED ON ";
           document.getElementById("btn0").style.borderRadius="10px";
 
         }
         else{ 
-          document.getElementById("btn0").innerHTML="Turn OFF";
+          document.getElementById("btn0").innerHTML="LED OFF";
           document.getElementById("btn0").style.borderRadius="10px";
         }
          
