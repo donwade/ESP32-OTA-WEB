@@ -88,7 +88,7 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
     tr {
       border: 1px solid white;
       font-family: "Verdana", "Arial", sans-serif;
-      font-size: 20px;
+      font-size: 18px;
     }
     th {
       height: 20px;
@@ -156,7 +156,7 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
      left: 60%;
      height: 50px;
      font-family: "Verdana", "Arial", sans-serif;
-     font-size: 20px;
+     font-size: 18px;
      font-weight: bold;
      line-height: 20px;
      padding-right: 20px;
@@ -167,7 +167,7 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
       left: 70%;
       height: 50px;
       font-family: "Verdana", "Arial", sans-serif;
-      font-size: 20px;
+      font-size: 18px;
       font-weight: bold;
       line-height: 20px;
       padding-right: 20px;
@@ -175,7 +175,7 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
     .category {
       font-family: "Verdana", "Arial", sans-serif;
       font-weight: bold;
-      font-size: 32px;
+      font-size: 20px;
       line-height: 50px;
       padding: 20px 10px 0px 10px;
       color: #000000;
@@ -183,7 +183,7 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
     .heading {
       font-family: "Verdana", "Arial", sans-serif;
       font-weight: normal;
-      font-size: 28px;
+      font-size: 20px;
       text-align: left;
     }
   
@@ -243,11 +243,9 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
     </header>
   
     <main class="container" style="margin-top:70px">
-      <div class="category">Sensor Readings</div>
-      <div style="border-radius: 10px !important;">
       <table style="width:50%">
         <colgroup>
-         //width of all N columns
+         //
          <col span="1" style="background-color:rgb(30,30,30); width: 30%; color:#000000 ;">
          <col span="1" style="background-color:rgb(80,80,80); width: 30%; color:#000000 ;">
          <col span="1" style="background-color:rgb(30,30,30); width: 30%; color:#000000 ;">
