@@ -443,6 +443,34 @@ void ota_setup()
   nvSetValue("CPU1_RESET", val);
   nvGetValue("CPU1_RESET", &val);
 
+/*
+  // https://deepbluembedded.com/esp32-change-cpu-speed-clock-frequency/
+
+  // normal values.
+  TRACE ota_setup:460   Xtal frequency = 40 mHz 								  
+  TRACE ota_setup:461   CpuFrequency = 240 mHz
+  TRACE ota_setup:462   APB bus frequency = 80 mHz
+  
+  // moving clock to CPU clock to 40 
+  //  look at XTAL table below, find the XTAL we have (its 40)
+  //  find the divider value (its 10 for us)
+  //function takes the following frequencies as valid values:
+  //  (240 160) = 80  <<< For all XTAL types
+  //  ( 40  20) = 10  <<< For 40MHz XTAL
+  //  ( 26)     = 13  <<< For 26MHz XTAL
+  //  ( 24)     = 12  <<< For 24MHz XTAL
+*/
+
+
+  setCpuFrequencyMhz(CPU_FREQ);  // 10 thru 40 ... fails on wifi
+
+  Serial.println();
+  TRACE ("-------- CPU FREQ %d/240 -------------------'");
+  TRACE ("Xtal frequency = %d mHz (normally 40)\n", getXtalFrequencyMhz());
+  TRACE ("CpuFrequency = %d mHz (normally 240)\n", getCpuFrequencyMhz());
+  TRACE ("APB bus frequency = %d mHz (normally 80)\n",  getApbFrequency()/1000000);
+
+
   WiFi.mode(WIFI_STA);
   WiFi.begin(ssid, password);
   

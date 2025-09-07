@@ -247,10 +247,11 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
       <div style="border-radius: 10px !important;">
       <table style="width:50%">
         <colgroup>
-         <col span="1" style="background-color:rgb(230,230,230); width: 25%; color:#000000 ;">
-         <col span="1" style="background-color:rgb(180,180,180); width: 25%; color:#000000 ;">
-         <col span="1" style="background-color:rgb(180,180,180); width: 25%; color:#000000 ;">
-         <col span="1" style="background-color:rgb(180,180,180); width: 25%; color:#000000 ;">
+         //width of all N columns
+         <col span="1" style="background-color:rgb(30,30,30); width: 30%; color:#000000 ;">
+         <col span="1" style="background-color:rgb(80,80,80); width: 30%; color:#000000 ;">
+         <col span="1" style="background-color:rgb(30,30,30); width: 30%; color:#000000 ;">
+         <col span="1" style="background-color:rgb(80,80,80); width: 30%; color:#000000 ;">
         </colgroup>
 
         <col span="2"style="background-color:rgb(0,0,0); color:#FFFFFF">

@@ -1,5 +1,7 @@
+#include <Arduino.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
+#include "addin-ota.h"
 #include "stdio.h" // For printf
 
 char eTaskStateGetStateChar( eTaskState eState );
@@ -34,7 +36,8 @@ void vPrintTaskStats( void *pvParameters )
         uxArraySize = uxTaskGetSystemState( pxTaskStatusArray, uxArraySize, &ulTotalRunTime );
 
         // Print header for task information
-        printf( "\nTask Name\tState\tPrio\tStack\t    HWM        Time %%\n" );
+        printf( "\nCPU FREQ = %d of 240 max\n", CPU_FREQ);
+        printf( "Task Name\tState\tPrio\tStack\t    HWM        Time %%\n" );
 
         // Iterate through the array and print information for each task.
         for( x = 0; x < uxArraySize; x++ )
@@ -49,7 +52,8 @@ void vPrintTaskStats( void *pvParameters )
                     					   : 0
                   );
         }
-
+		putchar('\n');
+        
         // Free the allocated memory.
         vPortFree( pxTaskStatusArray );
     }

@@ -514,14 +514,18 @@ void SendXML()
   battmon who; 
   getBatmon(&who);
   int32_t val;
+  char msg[50];
   
-  sprintf(xml_tbuf, "<UDTIME1>%+d</UDTIME1>\n", -who.dischargeTime);
+  secondsToHMS (who.dischargeTime, msg);
+  sprintf(xml_tbuf, "<UDTIME1>%s</UDTIME1>\n", msg);
   strcat(XML, xml_tbuf);
 
-  sprintf(xml_tbuf, "<NOTIME>%+d</NOTIME>\n", who.holdchargeTime);
+  secondsToHMS (who.holdchargeTime, msg);
+  sprintf(xml_tbuf, "<NOTIME>%s</NOTIME>\n", msg);
   strcat(XML, xml_tbuf);
 
-  sprintf(xml_tbuf, "<UDTIME2>%+d</UDTIME2>\n", who.chargeTime);
+  secondsToHMS (who.chargeTime, msg);
+  sprintf(xml_tbuf, "<UDTIME2>%s</UDTIME2>\n", msg);
   strcat(XML, xml_tbuf);
 
   // design point 2

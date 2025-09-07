@@ -103,7 +103,7 @@ char *secondsToHMS (time_t epoch_time, char *hms)
 	assert(hms);
 	
     struct tm *utc_time = gmtime(&epoch_time); // For UTC time
-    sprintf(hms, "%d|", utc_time->tm_yday);    // num of days
+    sprintf(hms, "%d:", utc_time->tm_yday);    // num of days
 	
     //strftime(hms, sizeof(hms), "%Y-%m-%d %H:%M:%S %Z", utc_time);
     strftime(&hms[strlen(hms)], 80, "%H:%M:%S", utc_time);
