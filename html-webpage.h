@@ -331,11 +331,10 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
       </table>
     </div>
 
-        <button type="button" class = "btn" id = "btn0" onclick="ButtonPress0()">Toggle</button>
-    </div>
+    <button type="button" class = "btn" id = "btn0" onclick="ButtonPress0()">Toggle</button>
+</div>
 
     <br>
-        <div class="bodytext">Reset NV</div>
             <button type="button" class = "btn" id = "btn1" onclick="ButtonPress1()">Toggle</button>
         </div>
     </br>
@@ -636,14 +635,14 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
         if (message == 0){
           document.getElementById("switch").style.backgroundColor="rgb(200,0,0)";
           document.getElementById("switch").innerHTML="OFF";
-           document.getElementById("btn1").innerHTML="Turn ON";
+           document.getElementById("btn1").innerHTML="RESET NV NOW";
           document.getElementById("btn1").style.borderRadius="10px";
           document.getElementById("switch").style.color="#0000AA"; 
         }
         else {
           document.getElementById("switch").style.backgroundColor="rgb(0,200,0)";
           document.getElementById("switch").innerHTML="ON";
-          document.getElementById("btn1").innerHTML="Turn OFF";
+          document.getElementById("btn1").innerHTML="RESET NV OFF";
           document.getElementById("btn1").style.borderRadius="10px";
           document.getElementById("switch").style.color="#00AA00";
         }
