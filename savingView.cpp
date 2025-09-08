@@ -97,7 +97,7 @@ void * savingMode(BUTTON_EVENT some_key)
 	IPAddress ip;
 	batt_stats battery;
 	uint8_t lineno = 1;
-	
+
 	getBatteryStats (&battery);
 
 	cprintf(_YELLOW, lineno++, "%4.2fv %3d%% %4dmA %s", 

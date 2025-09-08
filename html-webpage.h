@@ -314,13 +314,16 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
 
         <tr>
             <!-- where description will appear -->
-            <td><div class="bodytext"># REBOOTS/BRWN OUTS</div></td>
+            <td><div class="bodytext"># REBOOTS/BROWNS/DOGS</div></td>
 
             <!-- where REBOOT1 will appear -->
             <td><div class="tabledata" id = "z1"></div></td>  
 
             <!-- where REBOOT2 will appear -->
             <td><div class="tabledata" id = "z2"></div></td>  
+
+            <!-- where REBOOT2 will appear -->
+            <td><div class="tabledata" id = "z3"></div></td>  
         </tr>
 
 
@@ -611,6 +614,14 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
         // you can set color dynamically, maybe blue below a value, red above
         document.getElementById("z2").style.backgroundColor=color;
         //document.getElementById("z2").style.borderRadius="5px";
+
+        xmldoc = xmlResponse.getElementsByTagName("REBOOTS3");
+        message = xmldoc[0].firstChild.nodeValue;
+        document.getElementById("z3").innerHTML=message;
+        document.getElementById("z3").style.width=(barwidth+"%");
+        // you can set color dynamically, maybe blue below a value, red above
+        document.getElementById("z3").style.backgroundColor=color;
+        //document.getElementById("z3").style.borderRadius="5px";
 
 
         //-----------------------------------------------

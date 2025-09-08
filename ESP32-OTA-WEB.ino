@@ -224,7 +224,9 @@ void setup() {
   // this one is a page request, upon ESP getting / string the web page will be sent
   server.on("/", SendWebsite);
 
-  // upon esp getting /XML string, ESP will build and send the XML, this is how we refresh
+  // upon esp getting /XML string, 
+  // ESP will build and send the XML, 
+  // this is how we refresh
   // just parts of the web page
   
   server.on("/xml", SendXML);
@@ -459,11 +461,22 @@ void SendWebsite() {
 void SendXML() 
 {
 
-  #if 0 //dwade
-  Serial.printf("%s:%d %s\n", __FUNCTION__, __LINE__, formattedTimeRTC());
-  #endif
+  //------------------------
+  // send rates are all over the place. Lets sync them
+  // up to a one second rate
   
-  // Serial.println("sending xml");
+  static uint32_t last_time;
+  uint32_t diff;
+  uint32_t now = millis();
+  
+  diff = now - last_time;
+  
+  //Serial.printf("sending xml at %d\n", diff);
+
+  if (diff < 1000) delay(1001 - diff); //send every 1sec
+  last_time = millis();
+  
+  //------------------------
 
   strcpy(XML, "<?xml version = '1.0'?>\n<Data>\n");
 
@@ -539,6 +552,12 @@ void SendXML()
   sprintf(xml_tbuf, "<REBOOTS2>%d</REBOOTS2>\n", val);
   strcat(XML, xml_tbuf);
 
+  val = 0;
+  nvGetValue("DOG_CTR", &val);
+  sprintf(xml_tbuf, "<REBOOTS3>%d</REBOOTS3>\n", val);
+  strcat(XML, xml_tbuf);
+
+
   // show led0 status
   if (LED0) {
     strcat(XML, "<LED>1</LED>\n");
@@ -567,7 +586,7 @@ void SendXML()
   // you may have to play with this value, big pages need more porcessing time, and hence
   // a longer timeout that 200 ms
 
-  server.send(200, "text/xml", XML);
+  server.send(500, "text/xml", XML);
 
 
 }

@@ -53,6 +53,14 @@ int32_t nBrownoutCtr;
 uint8_t getResetReason(char *msg, RESET_REASON reason)
 {
   Serial.printf("\n%s ", msg);
+
+  if (reason < 10 && reason > 6)
+  {
+    int32_t value = 0; // default
+  	nvIncrementValue("DOG_CTR", &value);
+	TRACE ("****** WATCHDOG RESET FOUND\n");
+  }
+  
   switch (reason)
   {
     /**<1, Vbat power on reset*/
@@ -178,7 +186,8 @@ void brownout_init()
     REG_SET_BIT( RTC_CNTL_INT_ENA_REG, 
 				 RTC_CNTL_BROWN_OUT_INT_ENA_M);
 
-	bool pass = nvGetValue("BROWNOUT_CTR", &nBrownoutCtr);
+	int32_t nBrownoutCtr = 0;
+	bool pass = nvIncrementValue("BROWNOUT_CTR", &nBrownoutCtr);
 	if (!pass)
 	{
 		TRACE("\nVirgin :Set Brownout to 1 !\n");
@@ -304,11 +313,10 @@ bool nvGetValue(char *name, int32_t *value)
     if (err != ESP_OK) 
 	{
         TRACE("fail %s %s open NVS handle!\n", name, esp_err_to_name(err));
-		bool test = nvCreateValue(name, 0, true);
+		bool test = nvCreateValue(name, *value, true);
 		if (test == true)
 		{
 			retval = true;
-			*value = 0;
 		}
 		else
 			TRACE("failed to create value %s\n", name);
@@ -408,7 +416,8 @@ bool nvGetSetGtValue(char *name, int32_t *value)
 bool nvIncrementValue(char *name, int32_t *value)
 {
 	bool retval; 
-	int32_t x;
+	int32_t x = *value; // default if doesn't exist;
+	
 	retval = nvGetValue(name, &x);
 	if (!retval) return false;
 	
@@ -430,6 +439,7 @@ void ota_setup()
 
 	init_NVram();
 
+	val = 0;
 	nvIncrementValue("RESET_CTR", &val);
 	TRACE("reset count = %d\n", val);
 
