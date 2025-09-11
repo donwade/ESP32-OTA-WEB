@@ -10,6 +10,8 @@
 #include "watchdogs.h"
 #include "addin-ota.h"
 #include "RTC.h"
+#include "nv.h"
+
 #include "common.h"
 
 //#include "esp_brownout_detector.h" // Include the brownout detector header
@@ -120,40 +122,32 @@ uint8_t getResetReason(char *msg, RESET_REASON reason)
 
  void low_voltage_save(void *notused) 
 {
-
-    nvs_handle my_handle;
-    esp_err_t err = nvs_open("storage", NVS_READWRITE, &my_handle);
+	int32_t nBrownoutCtr = 0;
 	
-    if (err != ESP_OK) {
-        ets_printf("Error (%s) opening NVS handle!\n", esp_err_to_name(err));
-    } 
-	else
+	bool pass = nvIncrementValue("BROWNOUT_CTR", &nBrownoutCtr);
+	if (!pass)
 	{
-        err = nvs_get_i32(my_handle, "BROWNOUT_CTR", &nBrownoutCtr);
+		TRACE("\nVirgin :Set Brownout to 1 !\n");
+		nBrownoutCtr = 1;
+		nvSetValue("BROWNOUT_CTR", nBrownoutCtr);
+	}
+	
+	TRACE("brownout value is %d\n", nBrownoutCtr);
 
-		if (err == ESP_ERR_NVS_NOT_FOUND)
-		{
-			printf("The brownout value is not initialized yet!\n");
-			nBrownoutCtr = 1;
-		}
-		
-        err = nvs_set_i32(my_handle, "BROWNOUT_CTR", nBrownoutCtr);
-        err = nvs_commit(my_handle);
 
-        nvs_close(my_handle);
-		
-        REG_WRITE(RTC_CNTL_INT_CLR_REG, RTC_CNTL_BROWN_OUT_INT_CLR);
-		
-        esp_cpu_stall(!xPortGetCoreID());
+	// stop brown interrupts.
+	REG_WRITE(RTC_CNTL_INT_CLR_REG, RTC_CNTL_BROWN_OUT_INT_CLR);
 
-        ets_printf("\r\nBrownout detector was triggered\r\n\r\n");
-        //esp_restart_noos();
-        
-        while(1) {
-            vTaskDelay(1 / portTICK_PERIOD_MS);
-        }
-    }
+	//halt the cpu. Stop any damage.
+	esp_cpu_stall(!xPortGetCoreID());
 
+	ets_printf("\r\nBrownout detector was triggered\r\n\r\n");
+	//esp_restart_noos();
+
+	while(1)
+	{
+	    vTaskDelay(1 / portTICK_PERIOD_MS);
+	}
 
 }
 
@@ -187,14 +181,7 @@ void brownout_init()
 				 RTC_CNTL_BROWN_OUT_INT_ENA_M);
 
 	int32_t nBrownoutCtr = 0;
-	bool pass = nvIncrementValue("BROWNOUT_CTR", &nBrownoutCtr);
-	if (!pass)
-	{
-		TRACE("\nVirgin :Set Brownout to 1 !\n");
-		nBrownoutCtr = 1;
-		nvSetValue("BROWNOUT_CTR", nBrownoutCtr);
-	}
-	
+	nvGetValue("BROWNOUT_CTR", &nBrownoutCtr);
 	TRACE("brownout value is %d\n", nBrownoutCtr);
 }
 
@@ -202,232 +189,7 @@ void brownout_init()
 extern void web_setup(void);
 extern void web_loop(void);
 
-static bool bNVSinit = false;
-static SemaphoreHandle_t mMutexNV = xSemaphoreCreateMutex();
-
 //-------------------------------------------------------------
-
-bool init_NVram(void)
-{
-	bool retval = false; //fail
-	esp_err_t err;
-
-    err = nvs_flash_init();
-
-    if (err == ESP_ERR_NVS_NO_FREE_PAGES || err == ESP_ERR_NVS_NEW_VERSION_FOUND) 
-	{
-        // NVS partition was truncated and needs to be erased
-        // Retry nvs_flash_init
-        ESP_ERROR_CHECK(nvs_flash_erase());
-        err = nvs_flash_init();
-    }
-	
-    if (err)
-    {
-		ESP_ERROR_CHECK( err );
-		printf("%s FAILED INIT ***** \n", __FUNCTION__);
-		assert(err == 0);
-    }
-	else
-	{
-		printf("%s up and running\n", __FUNCTION__);
-		retval = true;
-	}
-	return retval;
-}
-
-//-------------------------------------------------------------
-
-bool nvErase(void)
-{
-	esp_err_t err;
-	err = nvs_flash_erase();
-	TRACE("nvs_flash_erase ret = %d\n", err);
-	
-	err = nvs_flash_init();
-	TRACE("nvs_flash_init retval = %d\n", err);
-	
-	for (int i = 0; i < 10; i++)
-	printf("reseting ....\n");
-
-	esp_restart();
-}
-
-bool nvCreateValue(char *name, int32_t value, bool bfast)
-{
-    nvs_handle hNVhandle;
-	esp_err_t err;
-	bool retval = false; //fail
-
-	if ( name == NULL ) return false;	
-	if ( strlen(name) > 20) name[19] = '\0';
-
-	if (!bfast) xSemaphoreTake(mMutexNV, portMAX_DELAY);
-	
-    err = nvs_open("storage", NVS_READWRITE, &hNVhandle);
-	
-    if (err != ESP_OK) 
-	{
-        TRACE("fail %s %s opening NVS handle!\n", name, esp_err_to_name(err));
-    }
-	else 
-    {
-		err = nvs_set_i32(hNVhandle, name, value);
-		if (!err)
-		{
-			err = nvs_commit(hNVhandle);
-			if (err)
-				TRACE("fail %s %s COMMIT!\n", name, esp_err_to_name(err));
-			else
-			{
-				TRACE("created %s with value 0!\n", name, 0);
-				retval = true;
-			}
-		}
-    }
-
-	nvs_close(hNVhandle);
-	
-	if (!bfast) xSemaphoreGive(mMutexNV);	
-	return retval;
-}
-
-//-------------------------------------------------------------
-
-bool nvGetValue(char *name, int32_t *value)
-{
-
-	int32_t temp;
-	
-    nvs_handle hNVhandle;
-	bool retval = false;
-	esp_err_t err;
-
-	if ( name == NULL ) return false;	
-	if ( strlen(name) > 20) name[19] = '\0';
-	
-	xSemaphoreTake(mMutexNV, portMAX_DELAY);
-
-    err = nvs_open("storage", NVS_READWRITE, &hNVhandle);
-	
-    if (err != ESP_OK) 
-	{
-        TRACE("fail %s %s open NVS handle!\n", name, esp_err_to_name(err));
-		bool test = nvCreateValue(name, *value, true);
-		if (test == true)
-		{
-			retval = true;
-		}
-		else
-			TRACE("failed to create value %s\n", name);
-    }
-	else 
-    {
-        err = nvs_get_i32(hNVhandle, name, &temp);
-		if (err == ESP_OK)
-		{
-			*value = temp;
-			//TRACE("read %s=%d\n", name, temp);
-			retval = true;
-		}
-		else
-		{
-			nvCreateValue(name, *value, true); 
-		}
-    }
-	
-	nvs_close(hNVhandle);
-	xSemaphoreGive(mMutexNV);	
-	
-	return retval;
-}
-
-//-------------------------------------------------------------
-
-bool nvSetValue(char *name, int32_t value)
-{
-    nvs_handle hNVhandle;
-	esp_err_t err;
-	bool retval = false; //fail
-
-	if ( name == NULL ) return false;	
-	if ( strlen(name) > 20) name[19] = '\0';
-	
-	xSemaphoreTake(mMutexNV, portMAX_DELAY);
-    err = nvs_open("storage", NVS_READWRITE, &hNVhandle);
-	
-    if (err != ESP_OK) 
-	{
-        TRACE("fail %s %s opening NVS handle!\n", name, esp_err_to_name(err));
-    }
-	else 
-    {
-        err = nvs_set_i32(hNVhandle, name, value);
-
-		if (err)
-			TRACE("fail %s %s WRITING!\n", name, esp_err_to_name(err));
-		else
-		{
-			TRACE("pass wrote value %d to %s\n", value, name);
-			retval = true; // written.
-		}
-    }
-	
-	nvs_close(hNVhandle);
-	xSemaphoreGive(mMutexNV);	
-	return retval;
-}
-
-
-//-------------------------------------------------------------
-
-bool nvGetSetLtValue(char *name, int32_t *value)
-{
-
-	int32_t temp = *value;  // use value is keynot exist
-	bool ok;
-	
-	ok = nvGetValue(name, &temp);
-	if (*value < temp)
-		ok = nvSetValue(name, *value);
-	else
-		*value = temp; // get had lesser value
-	
-	return ok;
-}
-
-//-------------------------------------------------------------
-
-bool nvGetSetGtValue(char *name, int32_t *value)
-{
-
-	int32_t temp = *value;  // use value is keynot exist
-	bool ok;
-	
-	ok = nvGetValue(name, &temp);
-	if ( *value > temp)
-		ok = nvSetValue(name, *value);
-	else
-		*value = temp; // get had greater value
-	
-	return ok;
-}
-
-bool nvIncrementValue(char *name, int32_t *value)
-{
-	bool retval; 
-	int32_t x = *value; // default if doesn't exist;
-	
-	retval = nvGetValue(name, &x);
-	if (!retval) return false;
-	
-	x++;
-	
-	retval = nvSetValue(name, x);
-	if(value) *value = x;
-	return retval;
-}
-
 //void app_main()
 void ota_setup()
 {
@@ -489,8 +251,11 @@ void ota_setup()
 		ESP.restart();
 	}
 
-	TRACE("initRTCfromNTP NOT being called. Coin testing\n");
-	//initRTCfromNTP();
+	#if 0
+		TRACE("initRTCfromNTP NOT being called. Coin testing\n");
+	#else
+		initRTCfromNTP();
+	#endif
 
 	// Port defaults to 3232
 	ArduinoOTA.setPort(3232);

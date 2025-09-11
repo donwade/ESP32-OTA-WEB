@@ -3,6 +3,7 @@
 #include "viewController.h"
 #include "RTC.h"
 #include "addin-ota.h"
+#include "nv.h"
 
 static uint8_t vert = 0;
 

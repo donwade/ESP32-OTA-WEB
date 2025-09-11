@@ -72,6 +72,7 @@
 #include "batmon.h"
 #include "addin-ota.h"
 #include "common.h"
+#include "nv.h"
 
 void runDisplayTask(void *not_used);
 void runPingTask(void *not_used);
