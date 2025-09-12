@@ -260,14 +260,13 @@ void setup() {
                      4                //UBaseType_t uxPriority)
                      );
 
-/*
+
 spawnTaskAndDogV2( runPingTask, 	//(void * not_used)TaskFunction_t pvTaskCode,
 				   "PingTask",  	//const char * const pcName,
 				   1024 * 8,		//const uint32_t usStackDepth,
 				   NULL,			//void * const pvParameters,
 				   4				//UBaseType_t uxPriority)
 				   );
-*/
 
 #if 1
 spawnTaskAndDogV2( runBatmonTask, 	//(void * not_used)TaskFunction_t pvTaskCode,

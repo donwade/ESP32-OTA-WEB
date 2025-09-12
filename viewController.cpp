@@ -124,15 +124,16 @@ void setToggleColors(uint32_t RGB_LEFT, uint32_t RGB_RIGHT, uint16_t brite)
 }
 
 
-#define ENABLE_DEBUG_PING 0   // not chatty on send
+#undef ENABLE_DEBUG_PING
 #undef  LOG_LEVEL_INFO		  // mute ping results  
 #define LOG_LEVEL_WARN 
 
 #include <ESPping.h>
 
+char pingStatus[30] ="pingStatus";
+
 void runPingTask(void *not_used)
 {
-	Serial.printf("starting %s\n", __FUNCTION__);
 	const IPAddress targetIP(10, 0, 0, 1);  
 
 	kickDog();
@@ -143,11 +144,11 @@ void runPingTask(void *not_used)
 		//Serial.print("Average response time: ");
 		//Serial.print(Ping.averageTime());
 		//Serial.println(" ms");
-		cprintf(_CYAN, 5, "Ping %5.3f mS ",  Ping.averageTime()); 
+		sprintf(pingStatus, "Ping %5.3f mS ",  Ping.averageTime()); 
 	}
 	else
 	{
-		cprintf(_CYAN, 5, "Ping fail");
+		sprintf(pingStatus, "Ping fail");
 		Serial.println("Ping failed.");  
 	}		
 	delay(2000);

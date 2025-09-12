@@ -111,6 +111,7 @@ void * savingMode(BUTTON_EVENT some_key)
 		
 
 	cprintf(_GREEN, lineno++, "host= %s", LOCAL_HOSTNAME);
+	cprintf(_GREEN, lineno++, "%s", pingStatus);
 
 /*		
 	ip = WiFi.localIP();

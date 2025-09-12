@@ -33,6 +33,7 @@ typedef enum KEY_STATE { KEY_UNKNOWN, KEY_DOWN, KEY_UP};
 extern int  xprintf(uint8_t lineNo, const char *format, ...); 
 extern int  cprintf(uint32_t color, uint8_t lineNo, const char *format, ...);
 extern void lfillRect(uint16_t x, uint16_t y, uint16_t wide, uint16_t height, uint32_t RGB);
+extern char pingStatus[30];
 
 extern void runLightBarTask(void *not_used);
 
